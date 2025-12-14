@@ -193,6 +193,22 @@ The backend API will be available at `http://localhost:3000`.
 |----------|--------|-------------|
 | `/api/health` | GET | Health check endpoint |
 | `/api/auth/login` | POST | Mock authentication (login/register) |
+| `/api/profile` | GET | Get own profile |
+| `/api/profile` | PUT | Update own profile |
+| `/api/feed` | GET | Get potential matches |
+| `/api/interact` | POST | Record like/pass action |
+| `/api/interact/matches` | GET | Get all matches |
+| `/api/dice` | GET | Get random user (Roll the Dice) |
+| `/api/wallet` | GET | Get credit balance |
+| `/api/wallet/add` | POST | Add credits (mock purchase) |
+| `/api/wallet/spend` | POST | Spend credits |
+| `/api/chat/:matchId` | GET | Get chat history |
+| `/api/chat/:matchId` | POST | Send message |
+| `/api/notifications` | GET | Get notifications |
+| `/api/notifications/:id/read` | POST | Mark notification as read |
+| `/api/notifications/read-all` | POST | Mark all notifications as read |
+| `/api/report` | POST | Report a user |
+| `/api/report/blocked` | GET | Get blocked users |
 
 **Login Request Example:**
 ```json
@@ -245,10 +261,20 @@ flutter run
 │   │   ├── server.ts           # Main Express server
 │   │   ├── config/
 │   │   │   └── database.ts     # PostgreSQL & Redis connections
+│   │   ├── middleware/
+│   │   │   └── auth.ts         # JWT authentication middleware
 │   │   ├── models/
-│   │   │   └── user.ts         # User model
+│   │   │   └── user.ts         # User model with profile CRUD
 │   │   └── routes/
-│   │       └── auth.ts         # Authentication routes
+│   │       ├── auth.ts         # Authentication routes
+│   │       ├── profile.ts      # Profile management routes
+│   │       ├── feed.ts         # Discovery/feed routes
+│   │       ├── interact.ts     # Like/pass/matches routes
+│   │       ├── dice.ts         # Roll the dice routes
+│   │       ├── wallet.ts       # Credit/wallet routes
+│   │       ├── chat.ts         # Chat/messaging routes
+│   │       ├── notifications.ts # Notification routes
+│   │       └── report.ts       # Reporting/blocking routes
 │   ├── package.json
 │   └── tsconfig.json
 ├── frontend/
@@ -256,11 +282,25 @@ flutter run
 │   │   ├── main.dart           # App entry point
 │   │   ├── config.dart         # API configuration
 │   │   ├── screens/
-│   │   │   ├── login_screen.dart    # Login UI
-│   │   │   └── hello_world_screen.dart
+│   │   │   ├── login_screen.dart              # Login UI
+│   │   │   ├── home_screen.dart               # Main home with bottom nav
+│   │   │   ├── feed_screen.dart               # Discovery feed with cards
+│   │   │   ├── matches_screen.dart            # Chat list UI
+│   │   │   ├── chat_room_screen.dart          # Chat room UI
+│   │   │   ├── wallet_screen.dart             # Wallet/credits UI
+│   │   │   ├── profile_name_gender_screen.dart    # Profile creation step 1
+│   │   │   ├── profile_looking_for_screen.dart    # Profile creation step 2
+│   │   │   ├── profile_bio_screen.dart            # Profile creation step 3
+│   │   │   ├── profile_photo_screen.dart          # Photo upload screen
+│   │   │   ├── profile_tags_screen.dart           # Tags/kinks selection
+│   │   │   └── hello_world_screen.dart            # Legacy welcome screen
 │   │   ├── widgets/            # Reusable widgets
 │   │   ├── services/
-│   │   │   └── auth_service.dart    # Auth API service
+│   │   │   ├── auth_service.dart      # Auth API service
+│   │   │   ├── profile_service.dart   # Profile API service
+│   │   │   ├── feed_service.dart      # Feed/discovery API service
+│   │   │   ├── chat_service.dart      # Chat API service
+│   │   │   └── wallet_service.dart    # Wallet API service
 │   │   └── models/             # Data models
 │   └── pubspec.yaml
 ├── docker-compose.yml          # PostgreSQL & Redis services

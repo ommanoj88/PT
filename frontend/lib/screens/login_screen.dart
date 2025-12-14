@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import 'hello_world_screen.dart';
+import 'home_screen.dart';
 
 /// Login screen for user authentication.
 /// Accepts phone number and email for mock authentication.
@@ -55,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         // Navigate to home screen on successful login
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HelloWorldScreen()),
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       }
     } catch (e) {
