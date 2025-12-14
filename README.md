@@ -292,8 +292,7 @@ flutter run
 │   │   │   ├── profile_looking_for_screen.dart    # Profile creation step 2
 │   │   │   ├── profile_bio_screen.dart            # Profile creation step 3
 │   │   │   ├── profile_photo_screen.dart          # Photo upload screen
-│   │   │   ├── profile_tags_screen.dart           # Tags/kinks selection
-│   │   │   └── hello_world_screen.dart            # Legacy welcome screen
+│   │   │   └── profile_tags_screen.dart           # Tags/kinks selection
 │   │   ├── widgets/            # Reusable widgets
 │   │   ├── services/
 │   │   │   ├── auth_service.dart      # Auth API service
@@ -303,7 +302,76 @@ flutter run
 │   │   │   └── wallet_service.dart    # Wallet API service
 │   │   └── models/             # Data models
 │   └── pubspec.yaml
+├── docs/
+│   └── API.md                  # Comprehensive API documentation
 ├── docker-compose.yml          # PostgreSQL & Redis services
 ├── IMPLEMENTATION_PLAN.md      # 30-PR implementation roadmap
+├── CONTRIBUTING.md             # Contributing guidelines
 └── README.md
 ```
+
+---
+
+## **Troubleshooting**
+
+### Common Issues
+
+**1. Database Connection Failed**
+```
+Error: Connection refused to PostgreSQL
+```
+- Ensure Docker is running: `docker-compose ps`
+- Restart services: `docker-compose down && docker-compose up -d`
+- Check logs: `docker-compose logs postgres`
+
+**2. Backend Build Errors**
+```
+Cannot find module 'pg'
+```
+- Install dependencies: `cd backend && npm install`
+- Clear node_modules: `rm -rf node_modules && npm install`
+
+**3. Frontend API Connection Issues**
+- Android Emulator uses `http://10.0.2.2:3000`
+- iOS Simulator uses `http://localhost:3000`
+- Ensure backend is running on port 3000
+
+**4. Port Already in Use**
+```
+Error: listen EADDRINUSE: address already in use :::3000
+```
+- Find process: `lsof -i :3000`
+- Kill process: `kill -9 <PID>`
+
+**5. Redis Connection Issues**
+- Check Redis is running: `docker-compose logs redis`
+- Verify Redis port: `docker-compose ps`
+
+### Environment Variables
+
+Ensure your `.env` file has all required variables:
+```bash
+PORT=3000
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_USER=vibecheck
+POSTGRES_PASSWORD=vibecheck_dev
+POSTGRES_DB=vibecheck
+REDIS_HOST=localhost
+REDIS_PORT=6379
+JWT_SECRET=your-super-secret-jwt-key-change-in-production
+```
+
+---
+
+## **Additional Documentation**
+
+- **[API Documentation](docs/API.md)** - Complete API reference with examples
+- **[Implementation Plan](IMPLEMENTATION_PLAN.md)** - 30-PR development roadmap
+- **[Contributing](CONTRIBUTING.md)** - How to contribute to this project
+
+---
+
+## **License**
+
+This project is for educational purposes. See individual dependencies for their licenses.
