@@ -17,4 +17,5 @@ class Config {
 
   /// API endpoints
   static String get healthEndpoint => '$apiBaseUrl/api/health';
+  static String get loginEndpoint => '$apiBaseUrl/api/auth/login';
 }

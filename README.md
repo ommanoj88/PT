@@ -147,6 +147,22 @@ Would you like me to detail the **Algorithm for "Roll the Dice"** (how it matche
 - Flutter SDK (3.0 or later)
 - Docker & Docker Compose (for database services)
 
+### **Database Setup (Docker)**
+
+```bash
+# Start PostgreSQL and Redis services
+docker-compose up -d
+
+# Check service status
+docker-compose ps
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
 ### **Backend Setup**
 
 ```bash
@@ -171,9 +187,37 @@ npm start
 
 The backend API will be available at `http://localhost:3000`.
 
-**Health Check Endpoint:**
+**API Endpoints:**
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/health` | GET | Health check endpoint |
+| `/api/auth/login` | POST | Mock authentication (login/register) |
+
+**Login Request Example:**
+```json
+{
+  "phone": "+1234567890",
+  "email": "user@example.com"
+}
 ```
-GET /api/health
+
+**Login Response Example:**
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "token": "jwt-token-here",
+    "user": {
+      "id": "uuid",
+      "phone": "+1234567890",
+      "email": "user@example.com",
+      "is_verified": false,
+      "created_at": "2024-01-01T00:00:00.000Z"
+    }
+  }
+}
 ```
 
 ### **Frontend Setup**
@@ -198,18 +242,28 @@ flutter run
 ```
 ├── backend/
 │   ├── src/
-│   │   └── server.ts       # Main Express server
+│   │   ├── server.ts           # Main Express server
+│   │   ├── config/
+│   │   │   └── database.ts     # PostgreSQL & Redis connections
+│   │   ├── models/
+│   │   │   └── user.ts         # User model
+│   │   └── routes/
+│   │       └── auth.ts         # Authentication routes
 │   ├── package.json
 │   └── tsconfig.json
 ├── frontend/
 │   ├── lib/
-│   │   ├── main.dart       # App entry point
-│   │   ├── config.dart     # API configuration
-│   │   ├── screens/        # UI screens
-│   │   ├── widgets/        # Reusable widgets
-│   │   ├── services/       # API services
-│   │   └── models/         # Data models
+│   │   ├── main.dart           # App entry point
+│   │   ├── config.dart         # API configuration
+│   │   ├── screens/
+│   │   │   ├── login_screen.dart    # Login UI
+│   │   │   └── hello_world_screen.dart
+│   │   ├── widgets/            # Reusable widgets
+│   │   ├── services/
+│   │   │   └── auth_service.dart    # Auth API service
+│   │   └── models/             # Data models
 │   └── pubspec.yaml
-├── IMPLEMENTATION_PLAN.md  # 30-PR implementation roadmap
+├── docker-compose.yml          # PostgreSQL & Redis services
+├── IMPLEMENTATION_PLAN.md      # 30-PR implementation roadmap
 └── README.md
 ```
