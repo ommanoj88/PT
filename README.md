@@ -137,3 +137,79 @@ To prevent lawsuits from giants like Match Group (Tinder, Hinge) or Bumble:
 
 
 Would you like me to detail the **Algorithm for "Roll the Dice"** (how it matches people) or draft the **Terms of Service** regarding the penalty clause?
+
+---
+
+## **Getting Started (Development)**
+
+### **Prerequisites**
+- Node.js (v18 or later)
+- Flutter SDK (3.0 or later)
+- Docker & Docker Compose (for database services)
+
+### **Backend Setup**
+
+```bash
+# Navigate to backend folder
+cd backend
+
+# Install dependencies
+npm install
+
+# Copy environment file
+cp .env.example .env
+
+# Run in development mode
+npm run dev
+
+# Build for production
+npm run build
+
+# Run production build
+npm start
+```
+
+The backend API will be available at `http://localhost:3000`.
+
+**Health Check Endpoint:**
+```
+GET /api/health
+```
+
+### **Frontend Setup**
+
+```bash
+# Navigate to frontend folder
+cd frontend
+
+# Install Flutter dependencies
+flutter pub get
+
+# Run the app
+flutter run
+```
+
+**API Configuration:**
+- Android Emulator: Uses `http://10.0.2.2:3000`
+- iOS Simulator: Uses `http://localhost:3000`
+
+### **Project Structure**
+
+```
+├── backend/
+│   ├── src/
+│   │   └── server.ts       # Main Express server
+│   ├── package.json
+│   └── tsconfig.json
+├── frontend/
+│   ├── lib/
+│   │   ├── main.dart       # App entry point
+│   │   ├── config.dart     # API configuration
+│   │   ├── screens/        # UI screens
+│   │   ├── widgets/        # Reusable widgets
+│   │   ├── services/       # API services
+│   │   └── models/         # Data models
+│   └── pubspec.yaml
+├── IMPLEMENTATION_PLAN.md  # 30-PR implementation roadmap
+└── README.md
+```
