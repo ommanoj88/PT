@@ -15,6 +15,7 @@ interface InteractionRequest {
  * Check for mutual matches
  */
 router.post('/', authenticateToken, async (req: AuthRequest, res: Response): Promise<void> => {
+  const client = await pool.connect();
   try {
     const userId = req.userId;
     const { to_user_id, action }: InteractionRequest = req.body;
@@ -44,13 +45,17 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response): Pro
       return;
     }
 
+    // Use transaction to prevent race conditions
+    await client.query('BEGIN');
+
     // Check if interaction already exists
-    const existingInteraction = await pool.query(
+    const existingInteraction = await client.query(
       'SELECT * FROM interactions WHERE from_user_id = $1 AND to_user_id = $2',
       [userId, to_user_id],
     );
 
     if (existingInteraction.rows.length > 0) {
+      await client.query('ROLLBACK');
       res.status(400).json({
         success: false,
         error: 'Interaction already recorded',
@@ -59,7 +64,7 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response): Pro
     }
 
     // Record the interaction
-    await pool.query(
+    await client.query(
       'INSERT INTO interactions (from_user_id, to_user_id, action) VALUES ($1, $2, $3)',
       [userId, to_user_id, action],
     );
@@ -68,20 +73,24 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response): Pro
 
     // Check for mutual match if action is 'like'
     if (action === 'like') {
-      const mutualLike = await pool.query(
+      const mutualLike = await client.query(
         "SELECT * FROM interactions WHERE from_user_id = $1 AND to_user_id = $2 AND action = 'like'",
         [to_user_id, userId],
       );
 
       if (mutualLike.rows.length > 0) {
-        // Create a match
-        await pool.query('INSERT INTO matches (user1_id, user2_id) VALUES ($1, $2)', [
-          userId,
-          to_user_id,
-        ]);
+        // Create a match with ON CONFLICT to handle race conditions
+        // Use consistent ordering of user IDs to prevent duplicates
+        const [user1, user2] = userId < to_user_id ? [userId, to_user_id] : [to_user_id, userId];
+        await client.query(
+          'INSERT INTO matches (user1_id, user2_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+          [user1, user2],
+        );
         isMatch = true;
       }
     }
+
+    await client.query('COMMIT');
 
     res.status(200).json({
       success: true,
@@ -91,11 +100,14 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response): Pro
       },
     });
   } catch (error) {
+    await client.query('ROLLBACK');
     console.error('Interaction error:', error);
     res.status(500).json({
       success: false,
       error: 'Internal server error',
     });
+  } finally {
+    client.release();
   }
 });
 

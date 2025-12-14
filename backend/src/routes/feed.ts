@@ -33,12 +33,12 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response): Prom
       return;
     }
 
-    // Map looking_for to gender filter
-    let genderFilter = '';
+    // Map looking_for to gender filter using parameterized query
+    let genderValue: string | null = null;
     if (currentUser.looking_for === 'men') {
-      genderFilter = "AND gender = 'male'";
+      genderValue = 'male';
     } else if (currentUser.looking_for === 'women') {
-      genderFilter = "AND gender = 'female'";
+      genderValue = 'female';
     }
     // 'couples' or null - return all
 
@@ -59,7 +59,7 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response): Prom
       FROM users u
       WHERE u.id != $1
         AND u.name IS NOT NULL
-        ${genderFilter}
+        AND ($2::text IS NULL OR u.gender = $2)
         AND u.id NOT IN (
           SELECT to_user_id FROM interactions WHERE from_user_id = $1
         )
@@ -67,7 +67,7 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response): Prom
       LIMIT 20
     `;
 
-    const result = await pool.query(query, [userId]);
+    const result = await pool.query(query, [userId, genderValue]);
 
     res.status(200).json({
       success: true,

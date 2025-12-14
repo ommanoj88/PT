@@ -32,12 +32,12 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response): Prom
       return;
     }
 
-    // Map looking_for to gender filter
-    let genderFilter = '';
+    // Map looking_for to gender filter using parameterized query
+    let genderValue: string | null = null;
     if (currentUser.looking_for === 'men') {
-      genderFilter = "AND gender = 'male'";
+      genderValue = 'male';
     } else if (currentUser.looking_for === 'women') {
-      genderFilter = "AND gender = 'female'";
+      genderValue = 'female';
     }
 
     // Get a random user that matches criteria
@@ -55,12 +55,12 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response): Prom
       FROM users u
       WHERE u.id != $1
         AND u.name IS NOT NULL
-        ${genderFilter}
+        AND ($2::text IS NULL OR u.gender = $2)
       ORDER BY RANDOM()
       LIMIT 1
     `;
 
-    const result = await pool.query(query, [userId]);
+    const result = await pool.query(query, [userId, genderValue]);
 
     if (result.rows.length === 0) {
       res.status(404).json({
