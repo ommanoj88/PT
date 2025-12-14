@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
-import 'screens/hello_world_screen.dart';
+import 'screens/home_screen.dart';
 import 'services/auth_service.dart';
 
 void main() {
@@ -64,6 +64,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
       );
     }
 
-    return _isLoggedIn ? const HelloWorldScreen() : const LoginScreen();
+    return _isLoggedIn ? const HomeScreen() : const LoginScreen();
   }
 }

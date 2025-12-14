@@ -18,4 +18,13 @@ class Config {
   /// API endpoints
   static String get healthEndpoint => '$apiBaseUrl/api/health';
   static String get loginEndpoint => '$apiBaseUrl/api/auth/login';
+  static String get profileEndpoint => '$apiBaseUrl/api/profile';
+  static String get feedEndpoint => '$apiBaseUrl/api/feed';
+  static String get interactEndpoint => '$apiBaseUrl/api/interact';
+  static String get matchesEndpoint => '$apiBaseUrl/api/interact/matches';
+  static String get diceEndpoint => '$apiBaseUrl/api/dice';
+  static String get walletEndpoint => '$apiBaseUrl/api/wallet';
+  static String get notificationsEndpoint => '$apiBaseUrl/api/notifications';
+  static String chatEndpoint(String matchId) => '$apiBaseUrl/api/chat/$matchId';
+  static String get reportEndpoint => '$apiBaseUrl/api/report';
 }
