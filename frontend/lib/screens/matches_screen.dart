@@ -97,7 +97,12 @@ class _MatchesScreenState extends State<MatchesScreen> {
             Container(
               padding: const EdgeInsets.all(AppTheme.spacing24),
               decoration: BoxDecoration(
-                gradient: AppTheme.primaryGradient.scale(0.3),
+                gradient: LinearGradient(
+                  colors: [
+                    AppTheme.accentPurple.withOpacity(0.3),
+                    AppTheme.accentFuchsia.withOpacity(0.3),
+                  ],
+                ),
                 borderRadius: BorderRadius.circular(AppTheme.radiusRound),
               ),
               child: Icon(

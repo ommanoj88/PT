@@ -204,32 +204,23 @@ class _PremiumButtonState extends State<PremiumButton>
                       color: widget.backgroundColor ?? AppTheme.accentFuchsia,
                       borderRadius: BorderRadius.circular(widget.borderRadius),
                     ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(widget.borderRadius),
-                  splashColor: Colors.white.withOpacity(0.1),
-                  highlightColor: Colors.white.withOpacity(0.05),
-                  onTap: null, // Handled by GestureDetector
-                  child: Padding(
-                    padding: widget.padding ??
-                        const EdgeInsets.symmetric(
-                          horizontal: AppTheme.spacing24,
-                          vertical: AppTheme.spacing16,
-                        ),
-                    child: Center(
-                      child: widget.isLoading
-                          ? SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                color: widget.foregroundColor ?? Colors.white,
-                                strokeWidth: 2.5,
-                              ),
-                            )
-                          : widget.child,
+              child: Padding(
+                padding: widget.padding ??
+                    const EdgeInsets.symmetric(
+                      horizontal: AppTheme.spacing24,
+                      vertical: AppTheme.spacing16,
                     ),
-                  ),
+                child: Center(
+                  child: widget.isLoading
+                      ? SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            color: widget.foregroundColor ?? Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
+                      : widget.child,
                 ),
               ),
             ),

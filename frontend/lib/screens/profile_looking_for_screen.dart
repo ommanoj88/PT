@@ -117,7 +117,14 @@ class _ProfileLookingForScreenState extends State<ProfileLookingForScreen> {
         duration: AppTheme.durationFast,
         padding: const EdgeInsets.all(AppTheme.spacing16),
         decoration: BoxDecoration(
-          gradient: isSelected ? AppTheme.primaryGradient.scale(0.3) : null,
+          gradient: isSelected
+              ? LinearGradient(
+                  colors: [
+                    AppTheme.accentPurple.withOpacity(0.3),
+                    AppTheme.accentFuchsia.withOpacity(0.3),
+                  ],
+                )
+              : null,
           color: isSelected ? null : colorScheme.surfaceContainerHighest.withOpacity(0.3),
           borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
           border: Border.all(

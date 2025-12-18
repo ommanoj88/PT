@@ -178,7 +178,14 @@ class _ProfileTagsScreenState extends State<ProfileTagsScreen> {
           vertical: AppTheme.spacing12,
         ),
         decoration: BoxDecoration(
-          gradient: isSelected ? AppTheme.primaryGradient.scale(0.5) : null,
+          gradient: isSelected
+              ? LinearGradient(
+                  colors: [
+                    AppTheme.accentPurple.withOpacity(0.5),
+                    AppTheme.accentFuchsia.withOpacity(0.5),
+                  ],
+                )
+              : null,
           color: isSelected ? null : colorScheme.surfaceContainerHighest.withOpacity(0.3),
           borderRadius: BorderRadius.circular(AppTheme.radiusRound),
           border: Border.all(
