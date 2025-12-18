@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../theme/app_theme.dart';
+import '../widgets/widgets.dart';
 import 'profile_photo_screen.dart';
 
 /// Screen 3: Bio input (Max 200 chars)
@@ -28,11 +31,12 @@ class _ProfileBioScreenState extends State<ProfileBioScreen> {
   }
 
   void _handleContinue() {
+    HapticFeedback.lightImpact();
     final bio = _bioController.text.trim();
 
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ProfilePhotoScreen(
+      FadeSlidePageRoute(
+        page: ProfilePhotoScreen(
           name: widget.name,
           gender: widget.gender,
           lookingFor: widget.lookingFor,
@@ -44,88 +48,67 @@ class _ProfileBioScreenState extends State<ProfileBioScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Profile'),
-        backgroundColor: const Color(0xFF6B21A8),
+        title: Text('Create Profile', style: textTheme.headlineSmall),
+        backgroundColor: colorScheme.secondaryContainer,
       ),
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1E1B4B),
-              Color(0xFF0F172A),
-            ],
-          ),
+          gradient: AppTheme.backgroundGradient,
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(AppTheme.spacing24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
+                Text(
                   'Tell us about yourself',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  style: textTheme.headlineLarge,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppTheme.spacing8),
                 Text(
                   'Write a short bio to let others know who you are (optional)',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withOpacity(0.7),
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppTheme.spacing24),
                 TextFormField(
                   controller: _bioController,
                   maxLength: 200,
                   maxLines: 5,
-                  style: const TextStyle(color: Colors.white),
+                  style: textTheme.bodyLarge,
                   decoration: InputDecoration(
                     hintText: "I'm a...",
-                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                    filled: true,
-                    fillColor: Colors.white.withOpacity(0.1),
-                    counterStyle: const TextStyle(color: Color(0xFFA78BFA)),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFD946EF)),
+                    counterStyle: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.secondary,
                     ),
                   ),
                 ),
                 const Spacer(),
-                ElevatedButton(
+                PremiumButton(
                   onPressed: _handleContinue,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD946EF),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  gradient: AppTheme.primaryGradient,
+                  child: Text(
+                    'Continue',
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  child: const Text(
-                    'Continue',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppTheme.spacing12),
                 TextButton(
                   onPressed: _handleContinue,
-                  child: const Text(
+                  child: Text(
                     'Skip for now',
-                    style: TextStyle(color: Color(0xFFA78BFA)),
+                    style: textTheme.labelMedium?.copyWith(
+                      color: colorScheme.secondary,
+                    ),
                   ),
                 ),
               ],

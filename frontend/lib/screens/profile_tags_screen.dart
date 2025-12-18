@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../services/profile_service.dart';
+import '../theme/app_theme.dart';
+import '../widgets/widgets.dart';
 import 'home_screen.dart';
 
 /// Screen for selecting kinks/tags - "Select Your Vibe"
@@ -46,6 +49,7 @@ class _ProfileTagsScreenState extends State<ProfileTagsScreen> {
   ];
 
   Future<void> _handleComplete() async {
+    HapticFeedback.mediumImpact();
     setState(() {
       _isLoading = true;
     });
@@ -63,7 +67,7 @@ class _ProfileTagsScreenState extends State<ProfileTagsScreen> {
       if (mounted) {
         // Navigate to home screen
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          FadeSlidePageRoute(page: const HomeScreen()),
           (route) => false,
         );
       }
@@ -84,83 +88,66 @@ class _ProfileTagsScreenState extends State<ProfileTagsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Your Vibe'),
-        backgroundColor: const Color(0xFF6B21A8),
+        title: Text('Select Your Vibe', style: textTheme.headlineSmall),
+        backgroundColor: colorScheme.secondaryContainer,
       ),
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1E1B4B),
-              Color(0xFF0F172A),
-            ],
-          ),
+          gradient: AppTheme.backgroundGradient,
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(AppTheme.spacing24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
+                Text(
                   "What's your vibe?",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  style: textTheme.headlineLarge,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppTheme.spacing8),
                 Text(
                   'Select tags that describe you (optional)',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withOpacity(0.7),
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppTheme.spacing24),
                 Expanded(
-                  child: Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: _availableTags.map((tag) => _buildTagChip(tag)).toList(),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _handleComplete,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD946EF),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  child: SingleChildScrollView(
+                    child: Wrap(
+                      spacing: AppTheme.spacing8,
+                      runSpacing: AppTheme.spacing8,
+                      children: _availableTags
+                          .map((tag) => _buildTagChip(tag, colorScheme, textTheme))
+                          .toList(),
                     ),
-                    disabledBackgroundColor: const Color(0xFFD946EF).withOpacity(0.5),
                   ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : const Text(
-                          'Complete Profile',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
                 ),
-                const SizedBox(height: 12),
+                PremiumButton(
+                  onPressed: _isLoading ? null : _handleComplete,
+                  isLoading: _isLoading,
+                  gradient: AppTheme.primaryGradient,
+                  child: Text(
+                    'Complete Profile',
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppTheme.spacing12),
                 TextButton(
                   onPressed: _isLoading ? null : _handleComplete,
-                  child: const Text(
+                  child: Text(
                     'Skip for now',
-                    style: TextStyle(color: Color(0xFFA78BFA)),
+                    style: textTheme.labelMedium?.copyWith(
+                      color: colorScheme.secondary,
+                    ),
                   ),
                 ),
               ],
@@ -171,29 +158,56 @@ class _ProfileTagsScreenState extends State<ProfileTagsScreen> {
     );
   }
 
-  Widget _buildTagChip(String tag) {
+  Widget _buildTagChip(String tag, ColorScheme colorScheme, TextTheme textTheme) {
     final isSelected = _selectedTags.contains(tag);
-    return FilterChip(
-      label: Text(tag),
-      selected: isSelected,
-      onSelected: (selected) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
         setState(() {
-          if (selected) {
-            _selectedTags.add(tag);
-          } else {
+          if (isSelected) {
             _selectedTags.remove(tag);
+          } else {
+            _selectedTags.add(tag);
           }
         });
       },
-      backgroundColor: Colors.white.withOpacity(0.1),
-      selectedColor: const Color(0xFFD946EF).withOpacity(0.5),
-      labelStyle: TextStyle(
-        color: isSelected ? Colors.white : const Color(0xFFA78BFA),
-        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-      ),
-      checkmarkColor: Colors.white,
-      side: BorderSide(
-        color: isSelected ? const Color(0xFFD946EF) : const Color(0xFFA78BFA),
+      child: AnimatedContainer(
+        duration: AppTheme.durationFast,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppTheme.spacing16,
+          vertical: AppTheme.spacing12,
+        ),
+        decoration: BoxDecoration(
+          gradient: isSelected
+              ? LinearGradient(
+                  colors: [
+                    AppTheme.accentPurple.withOpacity(0.5),
+                    AppTheme.accentFuchsia.withOpacity(0.5),
+                  ],
+                )
+              : null,
+          color: isSelected ? null : colorScheme.surfaceContainerHighest.withOpacity(0.3),
+          borderRadius: BorderRadius.circular(AppTheme.radiusRound),
+          border: Border.all(
+            color: isSelected ? colorScheme.primary : colorScheme.secondary.withOpacity(0.5),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isSelected) ...[
+              const Icon(Icons.check, color: Colors.white, size: 16),
+              const SizedBox(width: AppTheme.spacing4),
+            ],
+            Text(
+              tag,
+              style: textTheme.labelLarge?.copyWith(
+                color: isSelected ? Colors.white : colorScheme.secondary,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

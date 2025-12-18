@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../services/chat_service.dart';
+import '../theme/app_theme.dart';
+import '../widgets/widgets.dart';
 
 /// Chat room screen with message bubbles.
 class ChatRoomScreen extends StatefulWidget {
@@ -114,69 +117,95 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF6B21A8),
+        backgroundColor: colorScheme.secondaryContainer,
         title: Row(
           children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundColor: const Color(0xFF1E1B4B),
-              backgroundImage: widget.userPhoto != null
-                  ? MemoryImage(base64Decode(widget.userPhoto!))
-                  : null,
-              child: widget.userPhoto == null
-                  ? const Icon(Icons.person, color: Colors.white, size: 20)
-                  : null,
+            Container(
+              decoration: BoxDecoration(
+                gradient: AppTheme.primaryGradient,
+                shape: BoxShape.circle,
+              ),
+              padding: const EdgeInsets.all(2),
+              child: CircleAvatar(
+                radius: 18,
+                backgroundColor: colorScheme.surface,
+                backgroundImage: widget.userPhoto != null
+                    ? MemoryImage(base64Decode(widget.userPhoto!))
+                    : null,
+                child: widget.userPhoto == null
+                    ? Icon(Icons.person, color: colorScheme.secondary, size: 20)
+                    : null,
+              ),
             ),
-            const SizedBox(width: 12),
-            Text(widget.userName),
+            const SizedBox(width: AppTheme.spacing12),
+            Text(widget.userName, style: textTheme.titleMedium),
           ],
         ),
       ),
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1E1B4B),
-              Color(0xFF0F172A),
-            ],
-          ),
+          gradient: AppTheme.backgroundGradient,
         ),
         child: Column(
           children: [
             // Messages list
             Expanded(
               child: _isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(color: Color(0xFFD946EF)),
+                  ? Center(
+                      child: CircularProgressIndicator(color: colorScheme.primary),
                     )
                   : _messages.isEmpty
                       ? Center(
-                          child: Text(
-                            'Say hello! 👋',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.7),
-                              fontSize: 18,
-                            ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(AppTheme.spacing24),
+                                decoration: BoxDecoration(
+                                  color: colorScheme.primary.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(AppTheme.radiusRound),
+                                ),
+                                child: Text(
+                                  '👋',
+                                  style: textTheme.displayMedium,
+                                ),
+                              ),
+                              const SizedBox(height: AppTheme.spacing16),
+                              Text(
+                                'Say hello!',
+                                style: textTheme.headlineSmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
                           ),
                         )
                       : ListView.builder(
                           controller: _scrollController,
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(AppTheme.spacing16),
                           itemCount: _messages.length,
                           itemBuilder: (context, index) {
-                            return _buildMessageBubble(_messages[index]);
+                            return AnimatedListItem(
+                              index: index,
+                              delay: const Duration(milliseconds: 30),
+                              child: _buildMessageBubble(_messages[index], colorScheme, textTheme),
+                            );
                           },
                         ),
             ),
             // Input field
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppTheme.spacing16),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.3),
+                color: colorScheme.surface.withOpacity(0.5),
+                border: Border(
+                  top: BorderSide(color: colorScheme.outline),
+                ),
               ),
               child: SafeArea(
                 child: Row(
@@ -184,44 +213,32 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                     Expanded(
                       child: TextField(
                         controller: _messageController,
-                        style: const TextStyle(color: Colors.white),
+                        style: textTheme.bodyLarge,
                         decoration: InputDecoration(
                           hintText: 'Type a message...',
-                          hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.1),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide.none,
-                          ),
                           contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
+                            horizontal: AppTheme.spacing20,
+                            vertical: AppTheme.spacing12,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(AppTheme.radiusRound),
+                            borderSide: BorderSide.none,
                           ),
                         ),
                         textInputAction: TextInputAction.send,
                         onSubmitted: (_) => _sendMessage(),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Container(
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFD946EF),
-                        shape: BoxShape.circle,
-                      ),
-                      child: IconButton(
-                        icon: _isSending
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Icon(Icons.send, color: Colors.white),
-                        onPressed: _isSending ? null : _sendMessage,
-                      ),
+                    const SizedBox(width: AppTheme.spacing12),
+                    PremiumIconButton(
+                      icon: _isSending ? Icons.hourglass_empty : Icons.send_rounded,
+                      onPressed: _isSending ? null : () {
+                        HapticFeedback.lightImpact();
+                        _sendMessage();
+                      },
+                      size: 48,
+                      iconSize: 24,
+                      isPrimary: true,
                     ),
                   ],
                 ),
@@ -233,11 +250,15 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     );
   }
 
-  Widget _buildMessageBubble(Map<String, dynamic> message) {
+  Widget _buildMessageBubble(
+    Map<String, dynamic> message,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
     final isMine = message['is_mine'] == true;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: AppTheme.spacing12),
       child: Row(
         mainAxisAlignment: isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
@@ -245,23 +266,33 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
             constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width * 0.75,
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppTheme.spacing16,
+              vertical: AppTheme.spacing12,
+            ),
             decoration: BoxDecoration(
-              color: isMine
-                  ? const Color(0xFFD946EF)
-                  : Colors.white.withOpacity(0.15),
+              gradient: isMine ? AppTheme.primaryGradient : null,
+              color: isMine ? null : colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(20),
-                topRight: const Radius.circular(20),
-                bottomLeft: Radius.circular(isMine ? 20 : 4),
-                bottomRight: Radius.circular(isMine ? 4 : 20),
+                topLeft: const Radius.circular(AppTheme.radiusLarge),
+                topRight: const Radius.circular(AppTheme.radiusLarge),
+                bottomLeft: Radius.circular(isMine ? AppTheme.radiusLarge : AppTheme.spacing4),
+                bottomRight: Radius.circular(isMine ? AppTheme.spacing4 : AppTheme.radiusLarge),
               ),
+              boxShadow: isMine
+                  ? [
+                      BoxShadow(
+                        color: colorScheme.primary.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : null,
             ),
             child: Text(
               message['content'] ?? '',
-              style: TextStyle(
-                color: isMine ? Colors.white : Colors.white.withOpacity(0.9),
-                fontSize: 16,
+              style: textTheme.bodyLarge?.copyWith(
+                color: isMine ? Colors.white : colorScheme.onSurface,
               ),
             ),
           ),

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../services/auth_service.dart';
 import '../services/feed_service.dart';
+import '../theme/app_theme.dart';
+import '../widgets/widgets.dart';
 import 'login_screen.dart';
 import 'feed_screen.dart';
 import 'matches_screen.dart';
@@ -29,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await AuthService.logout();
     if (context.mounted) {
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        FadeSlidePageRoute(page: const LoginScreen()),
         (route) => false,
       );
     }
@@ -37,6 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _handleDiceRoll() async {
     if (_isDiceRolling) return;
+    
+    HapticFeedback.mediumImpact();
 
     setState(() {
       _isDiceRolling = true;
@@ -70,112 +75,109 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showDiceResult(Map<String, dynamic> user) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.7,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1E1B4B),
-              Color(0xFF0F172A),
-            ],
+        decoration: BoxDecoration(
+          gradient: AppTheme.backgroundGradient,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(AppTheme.radiusXLarge),
+            topRight: Radius.circular(AppTheme.radiusXLarge),
           ),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
+          border: Border.all(color: colorScheme.outline),
         ),
         child: Column(
           children: [
-            const SizedBox(height: 12),
+            const SizedBox(height: AppTheme.spacing12),
             Container(
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3),
+                color: colorScheme.outline,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const SizedBox(height: 24),
-            const Icon(
+            const SizedBox(height: AppTheme.spacing24),
+            Icon(
               Icons.casino,
-              color: Color(0xFFD946EF),
+              color: colorScheme.primary,
               size: 48,
             ),
-            const SizedBox(height: 12),
-            const Text(
+            const SizedBox(height: AppTheme.spacing12),
+            Text(
               '🎲 Dice Result!',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+              style: textTheme.headlineLarge,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppTheme.spacing24),
             // User info
-            CircleAvatar(
-              radius: 60,
-              backgroundColor: const Color(0xFF6B21A8),
-              child: Text(
-                (user['name'] as String? ?? '?')[0].toUpperCase(),
-                style: const TextStyle(fontSize: 48, color: Colors.white),
+            Container(
+              decoration: BoxDecoration(
+                gradient: AppTheme.primaryGradient,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: colorScheme.primary.withOpacity(0.3),
+                    blurRadius: 20,
+                    spreadRadius: 4,
+                  ),
+                ],
+              ),
+              child: CircleAvatar(
+                radius: 60,
+                backgroundColor: Colors.transparent,
+                child: Text(
+                  (user['name'] as String? ?? '?')[0].toUpperCase(),
+                  style: textTheme.displayMedium,
+                ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppTheme.spacing16),
             Text(
               '${user['name'] ?? 'Unknown'}${user['age'] != null ? ', ${user['age']}' : ''}',
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+              style: textTheme.displaySmall,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppTheme.spacing8),
             if (user['bio'] != null)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
+                padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacing32),
                 child: Text(
                   user['bio'],
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
-                    fontSize: 16,
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
                   textAlign: TextAlign.center,
                 ),
               ),
             const Spacer(),
             Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppTheme.spacing24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ElevatedButton.icon(
+                  PremiumIconButton(
+                    icon: Icons.close_rounded,
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
-                    label: const Text('Pass'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    ),
+                    size: 60,
+                    iconSize: 32,
+                    gradientColors: [colorScheme.error, colorScheme.error.withOpacity(0.7)],
                   ),
-                  ElevatedButton.icon(
+                  PremiumIconButton(
+                    icon: Icons.favorite_rounded,
                     onPressed: () {
+                      HapticFeedback.mediumImpact();
                       Navigator.pop(context);
                       // TODO: Like and maybe start chat
                     },
-                    icon: const Icon(Icons.favorite),
-                    label: const Text('Like'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF22C55E),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    ),
+                    size: 70,
+                    iconSize: 36,
+                    isPrimary: true,
+                    gradientColors: [AppTheme.success, AppTheme.success.withOpacity(0.7)],
                   ),
                 ],
               ),
@@ -188,20 +190,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('VibeCheck'),
-        backgroundColor: const Color(0xFF6B21A8),
+        title: Text('VibeCheck', style: textTheme.headlineSmall),
+        backgroundColor: colorScheme.secondaryContainer,
         actions: [
           // Dice button
           IconButton(
             onPressed: _isDiceRolling ? null : _handleDiceRoll,
             icon: _isDiceRolling
-                ? const SizedBox(
+                ? SizedBox(
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(
-                      color: Colors.white,
+                      color: colorScheme.onSurface,
                       strokeWidth: 2,
                     ),
                   )
@@ -211,20 +216,13 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       drawer: Drawer(
-        backgroundColor: const Color(0xFF1E1B4B),
+        backgroundColor: colorScheme.secondaryContainer,
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFF6B21A8),
-                    Color(0xFF1E1B4B),
-                  ],
-                ),
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                gradient: AppTheme.primaryGradient,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,73 +231,85 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icon(
                     Icons.favorite,
                     size: 48,
-                    color: Color(0xFFD946EF),
+                    color: colorScheme.primary,
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: AppTheme.spacing8),
                   Text(
                     'VibeCheck',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: textTheme.headlineLarge,
                   ),
                 ],
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.person, color: Color(0xFFA78BFA)),
-              title: const Text('Edit Profile', style: TextStyle(color: Colors.white)),
+              leading: Icon(Icons.person, color: colorScheme.secondary),
+              title: Text('Edit Profile', style: textTheme.bodyLarge),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ProfileNameGenderScreen()),
+                  FadeSlidePageRoute(page: const ProfileNameGenderScreen()),
                 );
               },
             ),
             ListTile(
-              leading: const Icon(Icons.settings, color: Color(0xFFA78BFA)),
-              title: const Text('Settings', style: TextStyle(color: Colors.white)),
+              leading: Icon(Icons.settings, color: colorScheme.secondary),
+              title: Text('Settings', style: textTheme.bodyLarge),
               onTap: () {
                 Navigator.pop(context);
                 // TODO: Navigate to settings screen
               },
             ),
-            const Divider(color: Color(0xFFA78BFA)),
+            Divider(color: colorScheme.secondary),
             ListTile(
-              leading: const Icon(Icons.logout, color: Colors.redAccent),
-              title: const Text('Logout', style: TextStyle(color: Colors.redAccent)),
+              leading: Icon(Icons.logout, color: colorScheme.error),
+              title: Text('Logout', style: textTheme.bodyLarge?.copyWith(color: colorScheme.error)),
               onTap: () => _handleLogout(context),
             ),
           ],
         ),
       ),
-      body: _screens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        backgroundColor: const Color(0xFF0F172A),
-        selectedItemColor: const Color(0xFFD946EF),
-        unselectedItemColor: const Color(0xFFA78BFA),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.explore),
-            label: 'Discover',
+      body: AnimatedSwitcher(
+        duration: AppTheme.durationMedium,
+        child: _screens[_currentIndex],
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          border: Border(
+            top: BorderSide(
+              color: colorScheme.outline,
+              width: 1,
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble),
-            label: 'Matches',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet),
-            label: 'Wallet',
-          ),
-        ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            HapticFeedback.selectionClick();
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          backgroundColor: Colors.transparent,
+          selectedItemColor: colorScheme.primary,
+          unselectedItemColor: colorScheme.secondary,
+          elevation: 0,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.explore_rounded),
+              label: 'Discover',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat_bubble_rounded),
+              label: 'Matches',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.account_balance_wallet_rounded),
+              label: 'Wallet',
+            ),
+          ],
+        ),
       ),
     );
   }

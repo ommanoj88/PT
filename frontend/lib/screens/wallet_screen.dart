@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../services/wallet_service.dart';
+import '../theme/app_theme.dart';
+import '../widgets/widgets.dart';
 
 /// Screen to view wallet balance and buy credits.
 class WalletScreen extends StatefulWidget {
@@ -54,24 +57,29 @@ class _WalletScreenState extends State<WalletScreen> {
   Future<void> _purchasePackage(Map<String, dynamic> package) async {
     if (_isPurchasing) return;
 
+    HapticFeedback.mediumImpact();
+
     setState(() {
       _isPurchasing = true;
     });
+
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     // Show processing dialog
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const AlertDialog(
-        backgroundColor: Color(0xFF1E1B4B),
+      builder: (context) => AlertDialog(
+        backgroundColor: colorScheme.surfaceContainerHighest,
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(color: Color(0xFFD946EF)),
-            SizedBox(height: 16),
+            CircularProgressIndicator(color: colorScheme.primary),
+            const SizedBox(height: AppTheme.spacing16),
             Text(
               'Processing...',
-              style: TextStyle(color: Colors.white),
+              style: textTheme.bodyLarge,
             ),
           ],
         ),
@@ -96,29 +104,38 @@ class _WalletScreenState extends State<WalletScreen> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            backgroundColor: const Color(0xFF1E1B4B),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            backgroundColor: colorScheme.surfaceContainerHighest,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
+            ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
-                  Icons.check_circle,
-                  color: Color(0xFF22C55E),
-                  size: 60,
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Success!',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                Container(
+                  padding: const EdgeInsets.all(AppTheme.spacing16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppTheme.success, AppTheme.success.withOpacity(0.7)],
+                    ),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check_rounded,
                     color: Colors.white,
+                    size: 40,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppTheme.spacing16),
+                Text(
+                  'Success!',
+                  style: textTheme.headlineMedium,
+                ),
+                const SizedBox(height: AppTheme.spacing8),
                 Text(
                   '${package['amount']} Sparks added to your wallet',
-                  style: const TextStyle(color: Color(0xFFA78BFA)),
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -126,9 +143,9 @@ class _WalletScreenState extends State<WalletScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text(
+                child: Text(
                   'OK',
-                  style: TextStyle(color: Color(0xFFD946EF)),
+                  style: TextStyle(color: colorScheme.primary),
                 ),
               ),
             ],
@@ -150,91 +167,84 @@ class _WalletScreenState extends State<WalletScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Container(
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFF1E1B4B),
-            Color(0xFF0F172A),
-          ],
-        ),
+        gradient: AppTheme.backgroundGradient,
       ),
       child: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFFD946EF)),
+          ? Center(
+              child: CircularProgressIndicator(color: colorScheme.primary),
             )
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppTheme.spacing24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Balance Card
-                  _buildBalanceCard(),
-                  const SizedBox(height: 32),
+                  _buildBalanceCard(colorScheme, textTheme),
+                  const SizedBox(height: AppTheme.spacing32),
                   // Packages
-                  const Text(
+                  Text(
                     'Buy Sparks',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                    style: textTheme.headlineLarge,
+                  ),
+                  const SizedBox(height: AppTheme.spacing16),
+                  ...List.generate(
+                    _packages.length,
+                    (index) => AnimatedListItem(
+                      index: index,
+                      child: _buildPackageCard(_packages[index], colorScheme, textTheme),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  ..._packages.map((pkg) => _buildPackageCard(pkg)),
                 ],
               ),
             ),
     );
   }
 
-  Widget _buildBalanceCard() {
+  Widget _buildBalanceCard(ColorScheme colorScheme, TextTheme textTheme) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppTheme.spacing24),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFD946EF), Color(0xFF6B21A8)],
-        ),
-        borderRadius: BorderRadius.circular(20),
+        gradient: AppTheme.primaryGradient,
+        borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFD946EF).withOpacity(0.3),
-            blurRadius: 20,
-            spreadRadius: 2,
+            color: colorScheme.primary.withOpacity(0.4),
+            blurRadius: 24,
+            spreadRadius: 4,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Column(
         children: [
-          const Text(
+          Text(
             'Your Balance',
-            style: TextStyle(
-              fontSize: 16,
+            style: textTheme.bodyLarge?.copyWith(
               color: Colors.white70,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppTheme.spacing8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.bolt, color: Colors.yellow, size: 36),
-              const SizedBox(width: 8),
+              const Icon(Icons.bolt_rounded, color: Colors.yellow, size: 40),
+              const SizedBox(width: AppTheme.spacing8),
               Text(
                 '$_credits',
-                style: const TextStyle(
-                  fontSize: 48,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                style: textTheme.displayLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
                 ),
               ),
             ],
           ),
-          const Text(
+          Text(
             'Sparks',
-            style: TextStyle(
-              fontSize: 18,
+            style: textTheme.titleMedium?.copyWith(
               color: Colors.white70,
             ),
           ),
@@ -243,97 +253,95 @@ class _WalletScreenState extends State<WalletScreen> {
     );
   }
 
-  Widget _buildPackageCard(Map<String, dynamic> package) {
+  Widget _buildPackageCard(
+    Map<String, dynamic> package,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
     final isPopular = package['label'] == 'Popular';
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: isPopular
-            ? Border.all(color: const Color(0xFFD946EF), width: 2)
-            : null,
-      ),
-      child: Stack(
-        children: [
-          if (isPopular)
-            Positioned(
-              top: 0,
-              right: 16,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFD946EF),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(8),
-                    bottomRight: Radius.circular(8),
+      margin: const EdgeInsets.only(bottom: AppTheme.spacing16),
+      child: GlassCard(
+        padding: EdgeInsets.zero,
+        child: Stack(
+          children: [
+            if (isPopular)
+              Positioned(
+                top: 0,
+                right: AppTheme.spacing16,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppTheme.spacing12,
+                    vertical: AppTheme.spacing4,
                   ),
-                ),
-                child: const Text(
-                  'Popular',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.primaryGradient,
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(AppTheme.radiusSmall),
+                      bottomRight: Radius.circular(AppTheme.radiusSmall),
+                    ),
+                  ),
+                  child: Text(
+                    'Popular',
+                    style: textTheme.labelSmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
-            ),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD946EF).withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.bolt,
-                    color: Colors.yellow,
-                    size: 32,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${package['amount']} Sparks',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(
-                        package['label'],
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.7),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: _isPurchasing ? null : () => _purchasePackage(package),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD946EF),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+            Padding(
+              padding: const EdgeInsets.all(AppTheme.spacing20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(AppTheme.spacing12),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                    ),
+                    child: const Icon(
+                      Icons.bolt_rounded,
+                      color: Colors.yellow,
+                      size: 32,
                     ),
                   ),
-                  child: Text(package['price']),
-                ),
-              ],
+                  const SizedBox(width: AppTheme.spacing16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${package['amount']} Sparks',
+                          style: textTheme.titleLarge,
+                        ),
+                        Text(
+                          package['label'],
+                          style: textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  GlassButton(
+                    onTap: _isPurchasing ? null : () => _purchasePackage(package),
+                    isLoading: _isPurchasing,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppTheme.spacing20,
+                      vertical: AppTheme.spacing12,
+                    ),
+                    child: Text(
+                      package['price'],
+                      style: textTheme.labelLarge,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
