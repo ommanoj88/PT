@@ -55,6 +55,12 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response): Prom
         u.photos,
         u.tags,
         u.is_verified,
+        u.kinks,
+        u.height,
+        u.body_type,
+        u.drinking,
+        u.smoking,
+        u.relationship_type,
         EXTRACT(YEAR FROM AGE(CURRENT_DATE, u.birthdate)) as age
       FROM users u
       WHERE u.id != $1
@@ -81,6 +87,12 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response): Prom
           photos: user.photos || [],
           tags: user.tags || [],
           is_verified: user.is_verified,
+          kinks: user.kinks || [],
+          height: user.height,
+          body_type: user.body_type,
+          drinking: user.drinking,
+          smoking: user.smoking,
+          relationship_type: user.relationship_type,
         })),
       },
     });
