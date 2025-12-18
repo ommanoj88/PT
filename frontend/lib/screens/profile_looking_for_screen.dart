@@ -72,7 +72,7 @@ class _ProfileLookingForScreenState extends State<ProfileLookingForScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "Hey ${widget.name}, who would you like to meet?",
+                  'Hey ${widget.name}, who would you like to meet?',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white.withOpacity(0.7),

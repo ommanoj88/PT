@@ -97,7 +97,7 @@ class _ProfileNameGenderScreenState extends State<ProfileNameGenderScreen> {
                 ),
                 const SizedBox(height: 32),
                 const Text(
-                  "I am a...",
+                  'I am a...',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,

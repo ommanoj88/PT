@@ -164,7 +164,7 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Text(
-                  "Add your best photos",
+                  'Add your best photos',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -173,7 +173,7 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "Add up to 3 photos to showcase yourself",
+                  'Add up to 3 photos to showcase yourself',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white.withOpacity(0.7),

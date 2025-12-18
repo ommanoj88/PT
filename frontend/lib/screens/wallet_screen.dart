@@ -62,14 +62,14 @@ class _WalletScreenState extends State<WalletScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E1B4B),
+      builder: (context) => const AlertDialog(
+        backgroundColor: Color(0xFF1E1B4B),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CircularProgressIndicator(color: Color(0xFFD946EF)),
-            const SizedBox(height: 16),
-            const Text(
+            CircularProgressIndicator(color: Color(0xFFD946EF)),
+            SizedBox(height: 16),
+            Text(
               'Processing...',
               style: TextStyle(color: Colors.white),
             ),

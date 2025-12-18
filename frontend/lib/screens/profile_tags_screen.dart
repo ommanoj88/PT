@@ -116,7 +116,7 @@ class _ProfileTagsScreenState extends State<ProfileTagsScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "Select tags that describe you (optional)",
+                  'Select tags that describe you (optional)',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white.withOpacity(0.7),

@@ -67,7 +67,7 @@ class _ProfileBioScreenState extends State<ProfileBioScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Text(
-                  "Tell us about yourself",
+                  'Tell us about yourself',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -76,7 +76,7 @@ class _ProfileBioScreenState extends State<ProfileBioScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "Write a short bio to let others know who you are (optional)",
+                  'Write a short bio to let others know who you are (optional)',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white.withOpacity(0.7),
