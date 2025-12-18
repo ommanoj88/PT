@@ -1,9 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'services/auth_service.dart';
+import 'theme/app_theme.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Set system UI overlay style for premium dark theme
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: AppTheme.primaryNavy,
+      systemNavigationBarIconBrightness: Brightness.light,
+    ),
+  );
+  
   runApp(const VibeCheckApp());
 }
 
@@ -16,13 +30,7 @@ class VibeCheckApp extends StatelessWidget {
     return MaterialApp(
       title: 'VibeCheck',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6B21A8), // Deep purple
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.darkTheme,
       home: const AuthWrapper(),
     );
   }
@@ -57,9 +65,53 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
+      return Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: AppTheme.backgroundGradient,
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(AppTheme.spacing24),
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.primaryGradient,
+                    borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.accentFuchsia.withOpacity(0.4),
+                        blurRadius: 32,
+                        spreadRadius: 4,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.favorite,
+                    size: 48,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: AppTheme.spacing24),
+                Text(
+                  'VibeCheck',
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: AppTheme.spacing16),
+                SizedBox(
+                  width: 32,
+                  height: 32,
+                  child: CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.primary,
+                    strokeWidth: 3,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       );
     }

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../theme/app_theme.dart';
+import '../widgets/widgets.dart';
 import 'profile_looking_for_screen.dart';
 
 /// Screen 1: Name & Gender selection
@@ -34,9 +37,11 @@ class _ProfileNameGenderScreenState extends State<ProfileNameGenderScreen> {
       return;
     }
 
+    HapticFeedback.lightImpact();
+
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ProfileLookingForScreen(
+      FadeSlidePageRoute(
+        page: ProfileLookingForScreen(
           name: name,
           gender: _selectedGender!,
         ),
@@ -46,84 +51,56 @@ class _ProfileNameGenderScreenState extends State<ProfileNameGenderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Profile'),
-        backgroundColor: const Color(0xFF6B21A8),
+        title: Text('Create Profile', style: textTheme.headlineSmall),
+        backgroundColor: colorScheme.secondaryContainer,
       ),
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1E1B4B),
-              Color(0xFF0F172A),
-            ],
-          ),
+          gradient: AppTheme.backgroundGradient,
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(AppTheme.spacing24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
+                Text(
                   "What's your name?",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  style: textTheme.headlineLarge,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppTheme.spacing16),
                 TextFormField(
                   controller: _nameController,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
+                  style: textTheme.bodyLarge,
+                  decoration: const InputDecoration(
                     hintText: 'Enter your name',
-                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                    filled: true,
-                    fillColor: Colors.white.withOpacity(0.1),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFD946EF)),
-                    ),
                   ),
                 ),
-                const SizedBox(height: 32),
-                const Text(
+                const SizedBox(height: AppTheme.spacing32),
+                Text(
                   'I am a...',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  style: textTheme.headlineLarge,
                 ),
-                const SizedBox(height: 16),
-                _buildGenderOption('Male', Icons.male),
-                const SizedBox(height: 12),
-                _buildGenderOption('Female', Icons.female),
-                const SizedBox(height: 12),
-                _buildGenderOption('Non-Binary', Icons.transgender),
+                const SizedBox(height: AppTheme.spacing16),
+                _buildGenderOption('Male', Icons.male, colorScheme, textTheme),
+                const SizedBox(height: AppTheme.spacing12),
+                _buildGenderOption('Female', Icons.female, colorScheme, textTheme),
+                const SizedBox(height: AppTheme.spacing12),
+                _buildGenderOption('Non-Binary', Icons.transgender, colorScheme, textTheme),
                 const Spacer(),
-                ElevatedButton(
+                PremiumButton(
                   onPressed: _handleContinue,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD946EF),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
+                  gradient: AppTheme.primaryGradient,
+                  child: Text(
                     'Continue',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ],
@@ -134,40 +111,43 @@ class _ProfileNameGenderScreenState extends State<ProfileNameGenderScreen> {
     );
   }
 
-  Widget _buildGenderOption(String label, IconData icon) {
+  Widget _buildGenderOption(
+    String label,
+    IconData icon,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
     final isSelected = _selectedGender == label.toLowerCase();
     return GestureDetector(
       onTap: () {
+        HapticFeedback.selectionClick();
         setState(() {
           _selectedGender = label.toLowerCase();
         });
       },
-      child: Container(
-        padding: const EdgeInsets.all(16),
+      child: AnimatedContainer(
+        duration: AppTheme.durationFast,
+        padding: const EdgeInsets.all(AppTheme.spacing16),
         decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFFD946EF).withOpacity(0.3)
-              : Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
+          gradient: isSelected ? AppTheme.primaryGradient.scale(0.3) : null,
+          color: isSelected ? null : colorScheme.surfaceContainerHighest.withOpacity(0.3),
+          borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
           border: Border.all(
-            color: isSelected ? const Color(0xFFD946EF) : Colors.transparent,
+            color: isSelected ? colorScheme.primary : Colors.transparent,
             width: 2,
           ),
         ),
         child: Row(
           children: [
-            Icon(icon, color: const Color(0xFFA78BFA), size: 28),
-            const SizedBox(width: 16),
+            Icon(icon, color: colorScheme.secondary, size: 28),
+            const SizedBox(width: AppTheme.spacing16),
             Text(
               label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-              ),
+              style: textTheme.titleMedium,
             ),
             const Spacer(),
             if (isSelected)
-              const Icon(Icons.check_circle, color: Color(0xFFD946EF)),
+              Icon(Icons.check_circle, color: colorScheme.primary),
           ],
         ),
       ),

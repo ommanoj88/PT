@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../services/feed_service.dart';
+import '../theme/app_theme.dart';
+import '../widgets/widgets.dart';
 import 'chat_room_screen.dart';
 
 /// Screen showing list of matches for chat.
@@ -44,25 +47,22 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFF1E1B4B),
-            Color(0xFF0F172A),
-          ],
-        ),
+        gradient: AppTheme.backgroundGradient,
       ),
-      child: _buildBody(),
+      child: _buildBody(colorScheme),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(ColorScheme colorScheme) {
+    final textTheme = Theme.of(context).textTheme;
+
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: Color(0xFFD946EF)),
+      return Center(
+        child: CircularProgressIndicator(color: colorScheme.primary),
       );
     }
 
@@ -71,19 +71,18 @@ class _MatchesScreenState extends State<MatchesScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, color: Colors.redAccent, size: 48),
-            const SizedBox(height: 16),
+            Icon(Icons.error_outline, color: colorScheme.error, size: 48),
+            const SizedBox(height: AppTheme.spacing16),
             Text(
               'Error loading matches',
-              style: TextStyle(color: Colors.white.withOpacity(0.7)),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _loadMatches,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFD946EF),
+              style: textTheme.bodyLarge?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
-              child: const Text('Retry'),
+            ),
+            const SizedBox(height: AppTheme.spacing16),
+            PremiumButton.primary(
+              label: 'Retry',
+              onPressed: _loadMatches,
             ),
           ],
         ),
@@ -95,24 +94,29 @@ class _MatchesScreenState extends State<MatchesScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.chat_bubble_outline,
-              color: Color(0xFFA78BFA),
-              size: 80,
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'No matches yet',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+            Container(
+              padding: const EdgeInsets.all(AppTheme.spacing24),
+              decoration: BoxDecoration(
+                gradient: AppTheme.primaryGradient.scale(0.3),
+                borderRadius: BorderRadius.circular(AppTheme.radiusRound),
+              ),
+              child: Icon(
+                Icons.chat_bubble_outline_rounded,
+                color: colorScheme.secondary,
+                size: 64,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppTheme.spacing24),
+            Text(
+              'No matches yet',
+              style: textTheme.headlineLarge,
+            ),
+            const SizedBox(height: AppTheme.spacing8),
             Text(
               'Start exploring to find your match!',
-              style: TextStyle(color: Colors.white.withOpacity(0.7)),
+              style: textTheme.bodyLarge?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -121,68 +125,89 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
     return RefreshIndicator(
       onRefresh: _loadMatches,
-      color: const Color(0xFFD946EF),
+      color: colorScheme.primary,
       child: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppTheme.spacing16),
         itemCount: _matches.length,
         itemBuilder: (context, index) {
           final match = _matches[index];
-          return _buildMatchTile(match);
+          return AnimatedListItem(
+            index: index,
+            child: _buildMatchTile(match, colorScheme),
+          );
         },
       ),
     );
   }
 
-  Widget _buildMatchTile(Map<String, dynamic> match) {
+  Widget _buildMatchTile(Map<String, dynamic> match, ColorScheme colorScheme) {
     final user = match['user'] as Map<String, dynamic>;
     final photos = user['photos'] as List? ?? [];
+    final textTheme = Theme.of(context).textTheme;
 
-    return Card(
-      color: Colors.white.withOpacity(0.1),
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(12),
-        leading: CircleAvatar(
-          radius: 30,
-          backgroundColor: const Color(0xFF6B21A8),
-          backgroundImage: photos.isNotEmpty
-              ? MemoryImage(base64Decode(photos[0]))
-              : null,
-          child: photos.isEmpty
-              ? const Icon(Icons.person, color: Colors.white)
-              : null,
-        ),
-        title: Text(
-          user['name'] ?? 'Unknown',
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
-        subtitle: Text(
-          user['bio'] ?? 'Tap to start chatting',
-          style: TextStyle(color: Colors.white.withOpacity(0.7)),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        trailing: const Icon(
-          Icons.chevron_right,
-          color: Color(0xFFA78BFA),
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChatRoomScreen(
-                matchId: match['match_id'],
-                userName: user['name'] ?? 'Unknown',
-                userPhoto: photos.isNotEmpty ? photos[0] : null,
-              ),
+    return GlassCard(
+      margin: const EdgeInsets.only(bottom: AppTheme.spacing12),
+      padding: const EdgeInsets.all(AppTheme.spacing12),
+      onTap: () {
+        HapticFeedback.selectionClick();
+        Navigator.push(
+          context,
+          FadeSlidePageRoute(
+            page: ChatRoomScreen(
+              matchId: match['match_id'],
+              userName: user['name'] ?? 'Unknown',
+              userPhoto: photos.isNotEmpty ? photos[0] : null,
             ),
-          );
-        },
+          ),
+        );
+      },
+      child: Row(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: AppTheme.primaryGradient,
+              shape: BoxShape.circle,
+            ),
+            padding: const EdgeInsets.all(2),
+            child: CircleAvatar(
+              radius: 28,
+              backgroundColor: colorScheme.surface,
+              backgroundImage: photos.isNotEmpty
+                  ? MemoryImage(base64Decode(photos[0]))
+                  : null,
+              child: photos.isEmpty
+                  ? Icon(Icons.person, color: colorScheme.secondary)
+                  : null,
+            ),
+          ),
+          const SizedBox(width: AppTheme.spacing16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  user['name'] ?? 'Unknown',
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: AppTheme.spacing4),
+                Text(
+                  user['bio'] ?? 'Tap to start chatting',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: colorScheme.secondary,
+          ),
+        ],
       ),
     );
   }

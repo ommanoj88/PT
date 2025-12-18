@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/profile_service.dart';
+import '../theme/app_theme.dart';
+import '../widgets/widgets.dart';
 import 'profile_tags_screen.dart';
 
 /// Screen for photo upload (mock - converts to Base64)
@@ -65,36 +68,59 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
   }
 
   void _showImageSourceDialog() {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF1E1B4B),
+      backgroundColor: colorScheme.secondaryContainer,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppTheme.radiusXLarge),
+        ),
+      ),
       builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.camera_alt, color: Color(0xFFA78BFA)),
-              title: const Text('Camera', style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.camera);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_library, color: Color(0xFFA78BFA)),
-              title: const Text('Gallery', style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.gallery);
-              },
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(AppTheme.spacing16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: colorScheme.outline,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: AppTheme.spacing24),
+              ListTile(
+                leading: Icon(Icons.camera_alt, color: colorScheme.secondary),
+                title: Text('Camera', style: textTheme.bodyLarge),
+                onTap: () {
+                  HapticFeedback.selectionClick();
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.photo_library, color: colorScheme.secondary),
+                title: Text('Gallery', style: textTheme.bodyLarge),
+                onTap: () {
+                  HapticFeedback.selectionClick();
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   void _removePhoto(int index) {
+    HapticFeedback.lightImpact();
     setState(() {
       _photos.removeAt(index);
       _photoPaths.removeAt(index);
@@ -102,6 +128,7 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
   }
 
   Future<void> _handleContinue() async {
+    HapticFeedback.lightImpact();
     setState(() {
       _isLoading = true;
     });
@@ -114,8 +141,8 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
 
       if (mounted) {
         Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ProfileTagsScreen(
+          FadeSlidePageRoute(
+            page: ProfileTagsScreen(
               name: widget.name,
               gender: widget.gender,
               lookingFor: widget.lookingFor,
@@ -141,92 +168,71 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Photos'),
-        backgroundColor: const Color(0xFF6B21A8),
+        title: Text('Add Photos', style: textTheme.headlineSmall),
+        backgroundColor: colorScheme.secondaryContainer,
       ),
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1E1B4B),
-              Color(0xFF0F172A),
-            ],
-          ),
+          gradient: AppTheme.backgroundGradient,
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(AppTheme.spacing24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
+                Text(
                   'Add your best photos',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  style: textTheme.headlineLarge,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppTheme.spacing8),
                 Text(
                   'Add up to 3 photos to showcase yourself',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withOpacity(0.7),
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppTheme.spacing24),
                 Expanded(
                   child: GridView.builder(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
+                      crossAxisSpacing: AppTheme.spacing12,
+                      mainAxisSpacing: AppTheme.spacing12,
                     ),
                     itemCount: 3,
                     itemBuilder: (context, index) {
                       if (index < _photoPaths.length) {
-                        return _buildPhotoTile(index);
+                        return _buildPhotoTile(index, colorScheme);
                       }
-                      return _buildAddPhotoTile();
+                      return _buildAddPhotoTile(colorScheme, textTheme);
                     },
                   ),
                 ),
-                ElevatedButton(
+                PremiumButton(
                   onPressed: _isLoading ? null : _handleContinue,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD946EF),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  isLoading: _isLoading,
+                  gradient: AppTheme.primaryGradient,
+                  child: Text(
+                    'Continue',
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
                     ),
-                    disabledBackgroundColor: const Color(0xFFD946EF).withOpacity(0.5),
                   ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : const Text(
-                          'Continue',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppTheme.spacing12),
                 TextButton(
                   onPressed: _isLoading ? null : _handleContinue,
-                  child: const Text(
+                  child: Text(
                     'Skip for now',
-                    style: TextStyle(color: Color(0xFFA78BFA)),
+                    style: textTheme.labelMedium?.copyWith(
+                      color: colorScheme.secondary,
+                    ),
                   ),
                 ),
               ],
@@ -237,27 +243,28 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
     );
   }
 
-  Widget _buildPhotoTile(int index) {
+  Widget _buildPhotoTile(int index, ColorScheme colorScheme) {
     return Stack(
       children: [
         Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
             image: DecorationImage(
               image: FileImage(File(_photoPaths[index])),
               fit: BoxFit.cover,
             ),
+            border: Border.all(color: colorScheme.outline),
           ),
         ),
         Positioned(
-          top: 4,
-          right: 4,
+          top: AppTheme.spacing4,
+          right: AppTheme.spacing4,
           child: GestureDetector(
             onTap: () => _removePhoto(index),
             child: Container(
-              padding: const EdgeInsets.all(4),
-              decoration: const BoxDecoration(
-                color: Colors.red,
+              padding: const EdgeInsets.all(AppTheme.spacing4),
+              decoration: BoxDecoration(
+                color: colorScheme.error,
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.close, color: Colors.white, size: 16),
@@ -268,27 +275,29 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
     );
   }
 
-  Widget _buildAddPhotoTile() {
+  Widget _buildAddPhotoTile(ColorScheme colorScheme, TextTheme textTheme) {
     return GestureDetector(
       onTap: _showImageSourceDialog,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
+          color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+          borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
           border: Border.all(
-            color: const Color(0xFFA78BFA),
+            color: colorScheme.secondary,
             width: 2,
             style: BorderStyle.solid,
           ),
         ),
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.add_a_photo, color: Color(0xFFA78BFA), size: 32),
-            SizedBox(height: 8),
+            Icon(Icons.add_a_photo, color: colorScheme.secondary, size: 32),
+            const SizedBox(height: AppTheme.spacing8),
             Text(
               'Add Photo',
-              style: TextStyle(color: Color(0xFFA78BFA), fontSize: 12),
+              style: textTheme.labelSmall?.copyWith(
+                color: colorScheme.secondary,
+              ),
             ),
           ],
         ),

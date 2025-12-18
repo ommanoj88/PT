@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/feed_service.dart';
+import '../theme/app_theme.dart';
 
 /// Revolutionary full-screen immersive dating card UI
 /// Features: Glassmorphism, gesture-based interactions, smooth animations
