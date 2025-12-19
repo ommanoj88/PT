@@ -115,7 +115,7 @@ Seeding initial users...
 ✓ Database setup completed successfully!
 ============================================================
 
-Default password for all seeded users: password123
+Default password for all seeded users: DevTestPass2024!SecureDefault
 You can update passwords using the application.
 
 ✓ Database connection closed
@@ -127,7 +127,7 @@ The script seeds 20 initial users with the following details:
 
 - **Phone numbers:** 9876543210 to 9876543229
 - **Email format:** firstname.lastname@email.com
-- **Default password:** `password123` (hashed using bcrypt)
+- **Default password:** `DevTestPass2024!SecureDefault` (hashed using bcrypt)
 - **Credits:** Varies from 80 to 250 credits per user
 - **Verified status:** All users are pre-verified
 - **Profiles:** Complete with name, gender, bio, photos, and tags
@@ -144,7 +144,7 @@ The script seeds 20 initial users with the following details:
 ## Password Management
 
 ### Default Password
-All seeded users have the default password: `password123`
+All seeded users have the default password: `DevTestPass2024!SecureDefault`
 
 ### Updating Passwords
 

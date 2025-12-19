@@ -20,13 +20,18 @@ DB_CONFIG = {
     'host': os.getenv('POSTGRES_HOST', 'localhost'),
     'port': int(os.getenv('POSTGRES_PORT', '5432')),
     'user': os.getenv('POSTGRES_USER', 'vibecheck'),
-    'password': os.getenv('POSTGRES_PASSWORD', 'Shobharain11@'),
+    'password': os.getenv('POSTGRES_PASSWORD'),  # Required, no fallback
     'database': os.getenv('POSTGRES_DB', 'vibecheck')
 }
 
 
 def get_db_connection():
     """Establish connection to PostgreSQL database"""
+    if not DB_CONFIG['password']:
+        print("✗ Error: POSTGRES_PASSWORD environment variable is required")
+        print("  Please set it in your .env file or environment")
+        sys.exit(1)
+    
     try:
         conn = psycopg2.connect(**DB_CONFIG)
         print(f"✓ Connected to PostgreSQL database: {DB_CONFIG['database']}")
@@ -235,8 +240,10 @@ def seed_initial_users(conn):
         
         print(f"✓ Current user count: {user_count}. Seeding 20 initial users...")
         
-        # Default password for all seed users (in production, users would set their own)
-        default_password = hash_password("password123")
+        # Default password for all seed users (for development/testing only)
+        # In production, users would set their own passwords during registration
+        # Using a strong default password that should be changed immediately
+        default_password = hash_password("DevTestPass2024!SecureDefault")
         
         # 20 initial users with complete profiles
         users = [
@@ -400,8 +407,10 @@ def main():
         print("\n" + "=" * 60)
         print("✓ Database setup completed successfully!")
         print("=" * 60)
-        print("\nDefault password for all seeded users: password123")
-        print("You can update passwords using the application.\n")
+        print("\n⚠️  SECURITY NOTICE:")
+        print("Default password for all seeded users: DevTestPass2024!SecureDefault")
+        print("This is for DEVELOPMENT/TESTING only.")
+        print("Change passwords before deploying to production!\n")
         
     finally:
         conn.close()

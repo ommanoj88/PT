@@ -6,7 +6,7 @@ export const pool = new Pool({
   host: process.env.POSTGRES_HOST || 'localhost',
   port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
   user: process.env.POSTGRES_USER || 'vibecheck',
-  password: process.env.POSTGRES_PASSWORD || 'Shobharain11@',
+  password: process.env.POSTGRES_PASSWORD,  // Required from environment
   database: process.env.POSTGRES_DB || 'vibecheck',
 });
 

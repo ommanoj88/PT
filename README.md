@@ -185,7 +185,7 @@ This script will:
 - Seed 20 initial users with secure password hashing (if not already present)
 
 **Default credentials for seeded users:**
-- Password: `password123` (bcrypt hashed)
+- Password: `DevTestPass2024!SecureDefault` (bcrypt hashed)
 - Phone numbers: 9876543210 to 9876543229
 - Emails: firstname.lastname@email.com
 
