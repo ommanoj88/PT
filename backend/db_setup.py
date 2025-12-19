@@ -15,6 +15,13 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+# Placeholder image (1x1 transparent PNG in base64)
+PLACEHOLDER_IMAGE = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+
+# Default password for seeded users (development/testing only)
+# Can be overridden with SEED_USER_PASSWORD environment variable
+DEFAULT_SEED_PASSWORD = os.getenv('SEED_USER_PASSWORD', 'DevTestPass2024!SecureDefault')
+
 # Database configuration from environment variables
 DB_CONFIG = {
     'host': os.getenv('POSTGRES_HOST', 'localhost'),
@@ -37,7 +44,9 @@ def get_db_connection():
         print(f"✓ Connected to PostgreSQL database: {DB_CONFIG['database']}")
         return conn
     except psycopg2.Error as e:
-        print(f"✗ Error connecting to database: {e}")
+        host = DB_CONFIG.get('host', 'unknown')
+        port = DB_CONFIG.get('port', 'unknown')
+        print(f"✗ Error connecting to database {host}:{port}: {e}")
         sys.exit(1)
 
 
@@ -240,111 +249,110 @@ def seed_initial_users(conn):
         
         print(f"✓ Current user count: {user_count}. Seeding 20 initial users...")
         
-        # Default password for all seed users (for development/testing only)
-        # In production, users would set their own passwords during registration
-        # Using a strong default password that should be changed immediately
-        default_password = hash_password("DevTestPass2024!SecureDefault")
+        # Hash the default password for all seed users
+        # Password can be customized via SEED_USER_PASSWORD environment variable
+        default_password = hash_password(DEFAULT_SEED_PASSWORD)
         
         # 20 initial users with complete profiles
         users = [
             ('9876543210', 'priya.sharma@email.com', default_password, 'Priya Sharma', 'female', 'male', 
              'Coffee addict ☕ | Travel enthusiast 🌍 | Bookworm 📚', '1995-03-15', 
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['coffee', 'travel', 'books', 'foodie'], 100, True),
             
             ('9876543211', 'rahul.verma@email.com', default_password, 'Rahul Verma', 'male', 'female',
              'Fitness freak 💪 | Tech geek 💻 | Foodie 🍕', '1993-07-20',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['fitness', 'tech', 'food', 'gaming'], 150, True),
             
             ('9876543212', 'ananya.singh@email.com', default_password, 'Ananya Singh', 'female', 'male',
              'Artist 🎨 | Dog lover 🐕 | Adventure seeker 🏔️', '1996-11-08',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['art', 'dogs', 'adventure', 'hiking'], 80, True),
             
             ('9876543213', 'arjun.patel@email.com', default_password, 'Arjun Patel', 'male', 'female',
              'Entrepreneur | Music lover 🎵 | Motorcycle enthusiast 🏍️', '1992-05-12',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['music', 'bikes', 'business', 'travel'], 200, True),
             
             ('9876543214', 'sneha.reddy@email.com', default_password, 'Sneha Reddy', 'female', 'male',
              'Yoga instructor 🧘 | Nature lover 🌿 | Minimalist', '1997-09-25',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['yoga', 'nature', 'wellness', 'meditation'], 120, True),
             
             ('9876543215', 'vikram.kumar@email.com', default_password, 'Vikram Kumar', 'male', 'female',
              'Software engineer 👨‍💻 | Gamer 🎮 | Anime fan', '1994-01-30',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['coding', 'gaming', 'anime', 'tech'], 90, True),
             
             ('9876543216', 'ishita.joshi@email.com', default_password, 'Ishita Joshi', 'female', 'male',
              'Fashion blogger 👗 | Wine enthusiast 🍷 | Beach bum 🏖️', '1995-06-18',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['fashion', 'wine', 'beach', 'shopping'], 110, True),
             
             ('9876543217', 'rohan.mehta@email.com', default_password, 'Rohan Mehta', 'male', 'female',
              'Photographer 📸 | Traveler ✈️ | Craft beer lover 🍺', '1991-12-05',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['photography', 'travel', 'beer', 'adventure'], 180, True),
             
             ('9876543218', 'kavya.nair@email.com', default_password, 'Kavya Nair', 'female', 'male',
              'Dentist 🦷 | Dancer 💃 | Foodie with a sweet tooth 🍰', '1996-04-22',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['dance', 'food', 'desserts', 'music'], 95, True),
             
             ('9876543219', 'aditya.chopra@email.com', default_password, 'Aditya Chopra', 'male', 'female',
              'Investment banker 💼 | Runner 🏃 | Whiskey connoisseur 🥃', '1990-08-14',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['finance', 'running', 'whiskey', 'fitness'], 250, True),
             
             ('9876543220', 'meera.krishnan@email.com', default_password, 'Meera Krishnan', 'female', 'male',
              'Classical dancer 💃 | Flexible in every way', '1998-02-14',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['dance', 'music', 'culture'], 85, True),
             
             ('9876543221', 'karan.malhotra@email.com', default_password, 'Karan Malhotra', 'male', 'female',
              'Gym trainer 🏋️ | Fitness enthusiast', '1991-06-22',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['gym', 'protein', 'health'], 175, True),
             
             ('9876543222', 'simran.kaur@email.com', default_password, 'Simran Kaur', 'female', 'male',
              'Air hostess ✈️ | Travel lover', '1995-09-10',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['travel', 'luxury', 'adventure'], 140, True),
             
             ('9876543223', 'dev.sharma@email.com', default_password, 'Dev Sharma', 'male', 'female',
              'Bartender 🍸 | Nightlife enthusiast', '1993-12-03',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['cocktails', 'nightlife', 'music'], 130, True),
             
             ('9876543224', 'pooja.agarwal@email.com', default_password, 'Pooja Agarwal', 'female', 'male',
              'Startup founder 💻 | Hustler', '1994-04-28',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['startup', 'hustle', 'tech'], 200, True),
             
             ('9876543225', 'nikhil.gupta@email.com', default_password, 'Nikhil Gupta', 'male', 'female',
              'Doctor 🩺 | Medical professional', '1989-07-15',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['medicine', 'golf', 'wine'], 220, True),
             
             ('9876543226', 'rhea.kapoor@email.com', default_password, 'Rhea Kapoor', 'female', 'male',
              'Model 📸 | Fashion enthusiast', '1997-11-20',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['modeling', 'fashion', 'luxury'], 160, True),
             
             ('9876543227', 'amit.saxena@email.com', default_password, 'Amit Saxena', 'male', 'female',
              'Chef 👨‍🍳 | Culinary expert', '1992-03-08',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['cooking', 'food', 'wine'], 145, True),
             
             ('9876543228', 'tanya.bhatia@email.com', default_password, 'Tanya Bhatia', 'female', 'male',
              'Lawyer ⚖️ | Legal professional', '1993-08-17',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['law', 'debate', 'reading'], 190, True),
             
             ('9876543229', 'rajat.singhania@email.com', default_password, 'Rajat Singhania', 'male', 'female',
              'Pilot ✈️ | Aviation expert', '1990-01-25',
-             ['iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='],
+             [PLACEHOLDER_IMAGE],
              ['aviation', 'travel', 'adventure'], 230, True),
         ]
         
@@ -408,8 +416,9 @@ def main():
         print("✓ Database setup completed successfully!")
         print("=" * 60)
         print("\n⚠️  SECURITY NOTICE:")
-        print("Default password for all seeded users: DevTestPass2024!SecureDefault")
+        print(f"Default password for all seeded users: {DEFAULT_SEED_PASSWORD}")
         print("This is for DEVELOPMENT/TESTING only.")
+        print("To customize, set SEED_USER_PASSWORD environment variable.")
         print("Change passwords before deploying to production!\n")
         
     finally:
