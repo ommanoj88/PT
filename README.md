@@ -151,19 +151,47 @@ Would you like me to detail the **Algorithm for "Roll the Dice"** (how it matche
 
 ```bash
 # Start PostgreSQL and Redis services
-docker-compose up -d
+docker compose up -d
 
 # Check service status
-docker-compose ps
+docker compose ps
 
 # View logs
-docker-compose logs -f
+docker compose logs -f
 
 # Stop services
-docker-compose down
+docker compose down
 ```
 
-### **Backend Setup**
+### **Database Initialization (Python)**
+
+**New: Python Database Setup Script** - For initial database setup and user seeding:
+
+```bash
+# Navigate to backend folder
+cd backend
+
+# Install Python dependencies (one-time setup)
+pip install -r requirements.txt
+
+# Run the database setup script
+python3 db_setup.py
+```
+
+This script will:
+- Create the database if it doesn't exist
+- Create all required tables (users, interactions, matches, messages, notifications, reports)
+- Create database indexes for performance
+- Seed 20 initial users with secure password hashing (if not already present)
+
+**Default credentials for seeded users:**
+- Password: `password123` (bcrypt hashed)
+- Phone numbers: 9876543210 to 9876543229
+- Emails: firstname.lastname@email.com
+
+For detailed documentation, see [DB_SETUP_GUIDE.md](backend/DB_SETUP_GUIDE.md)
+
+### **Backend Setup (Node.js)**
 
 ```bash
 # Navigate to backend folder
