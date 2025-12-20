@@ -237,7 +237,7 @@ class AppTheme {
     ),
     
     // Card Theme - using custom containers instead
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: secondaryNavy,
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -341,7 +341,7 @@ class AppTheme {
     ),
     
     // Dialog Theme
-    dialogTheme: DialogTheme(
+    dialogTheme: DialogThemeData(
       backgroundColor: secondaryNavy,
       elevation: 0,
       shape: RoundedRectangleBorder(
