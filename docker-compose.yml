@@ -6,7 +6,7 @@ services:
     container_name: vibecheck-postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-vibecheck}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-Shobharain11@}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password123}
       POSTGRES_DB: ${POSTGRES_DB:-vibecheck}
     ports:
       - '5432:5432'
