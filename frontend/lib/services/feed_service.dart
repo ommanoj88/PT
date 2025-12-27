@@ -5,7 +5,7 @@ import 'auth_service.dart';
 
 /// Service class to handle feed/discovery API calls.
 class FeedService {
-  /// Get potential matches.
+  /// Get potential matches (Pure-style: only live users).
   static Future<List<Map<String, dynamic>>> getFeed() async {
     final token = await AuthService.getToken();
 
@@ -30,7 +30,7 @@ class FeedService {
     }
   }
 
-  /// Record an interaction (like or pass).
+  /// Record an interaction (like or pass) - still supports old matching.
   static Future<Map<String, dynamic>> interact({
     required String toUserId,
     required String action,

@@ -72,4 +72,55 @@ class ProfileService {
       throw Exception(data['error'] ?? 'Failed to update profile');
     }
   }
+
+  /// Go Live - Pure style feature to make profile visible for limited time.
+  static Future<Map<String, dynamic>> goLive({int durationHours = 1}) async {
+    final token = await AuthService.getToken();
+
+    if (token == null) {
+      throw Exception('Not authenticated');
+    }
+
+    final response = await http.post(
+      Uri.parse(Config.goLiveEndpoint),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'duration_hours': durationHours}),
+    );
+
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 200 && data['success'] == true) {
+      return data['data'];
+    } else {
+      throw Exception(data['error'] ?? 'Failed to go live');
+    }
+  }
+
+  /// Go Offline - Make profile invisible.
+  static Future<Map<String, dynamic>> goOffline() async {
+    final token = await AuthService.getToken();
+
+    if (token == null) {
+      throw Exception('Not authenticated');
+    }
+
+    final response = await http.post(
+      Uri.parse(Config.goOfflineEndpoint),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 200 && data['success'] == true) {
+      return data['data'];
+    } else {
+      throw Exception(data['error'] ?? 'Failed to go offline');
+    }
+  }
 }

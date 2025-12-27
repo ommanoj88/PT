@@ -13,6 +13,7 @@ import walletRoutes from './routes/wallet';
 import chatRoutes from './routes/chat';
 import notificationRoutes from './routes/notifications';
 import reportRoutes from './routes/report';
+import requestRoutes from './routes/requests';
 
 // Load environment variables
 dotenv.config();
@@ -103,6 +104,9 @@ app.use('/api/notifications', notificationRoutes);
 
 // Report routes (Trust & Safety)
 app.use('/api/report', reportRoutes);
+
+// Chat Requests routes (Pure-style direct request model)
+app.use('/api/requests', interactLimiter, requestRoutes);
 
 // Initialize database and start server
 async function startServer(): Promise<void> {

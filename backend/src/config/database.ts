@@ -49,6 +49,8 @@ export async function initializeDatabase(): Promise<void> {
       tags TEXT[],
       credits INTEGER DEFAULT 0,
       is_verified BOOLEAN DEFAULT FALSE,
+      is_live BOOLEAN DEFAULT FALSE,
+      live_until TIMESTAMP WITH TIME ZONE,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
@@ -110,6 +112,29 @@ export async function initializeDatabase(): Promise<void> {
     );
   `;
 
+  // Pure-style chat requests table (direct request model)
+  const createChatRequestsTable = `
+    CREATE TABLE IF NOT EXISTS chat_requests (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      from_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      to_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      message TEXT,
+      status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected', 'expired')),
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+      expires_at TIMESTAMP WITH TIME ZONE DEFAULT (CURRENT_TIMESTAMP + INTERVAL '1 hour'),
+      responded_at TIMESTAMP WITH TIME ZONE,
+      UNIQUE(from_user_id, to_user_id)
+    );
+  `;
+
+  // Create indexes for chat_requests for optimized queries
+  const createChatRequestsIndexes = `
+    CREATE INDEX IF NOT EXISTS idx_chat_requests_to_user_status_expires 
+      ON chat_requests(to_user_id, status, expires_at);
+    CREATE INDEX IF NOT EXISTS idx_chat_requests_from_user 
+      ON chat_requests(from_user_id);
+  `;
+
   // Add new columns if they don't exist (for existing tables)
   const addColumnsIfNotExist = `
     DO $$ 
@@ -122,6 +147,8 @@ export async function initializeDatabase(): Promise<void> {
       BEGIN ALTER TABLE users ADD COLUMN photos TEXT[]; EXCEPTION WHEN duplicate_column THEN NULL; END;
       BEGIN ALTER TABLE users ADD COLUMN tags TEXT[]; EXCEPTION WHEN duplicate_column THEN NULL; END;
       BEGIN ALTER TABLE users ADD COLUMN credits INTEGER DEFAULT 0; EXCEPTION WHEN duplicate_column THEN NULL; END;
+      BEGIN ALTER TABLE users ADD COLUMN is_live BOOLEAN DEFAULT FALSE; EXCEPTION WHEN duplicate_column THEN NULL; END;
+      BEGIN ALTER TABLE users ADD COLUMN live_until TIMESTAMP WITH TIME ZONE; EXCEPTION WHEN duplicate_column THEN NULL; END;
     END $$;
   `;
 
@@ -133,6 +160,8 @@ export async function initializeDatabase(): Promise<void> {
     await pool.query(createMessagesTable);
     await pool.query(createNotificationsTable);
     await pool.query(createReportsTable);
+    await pool.query(createChatRequestsTable);
+    await pool.query(createChatRequestsIndexes);
     console.log('Database tables initialized successfully');
   } catch (error) {
     console.error('Error initializing database tables:', error);
