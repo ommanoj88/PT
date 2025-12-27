@@ -127,6 +127,14 @@ export async function initializeDatabase(): Promise<void> {
     );
   `;
 
+  // Create indexes for chat_requests for optimized queries
+  const createChatRequestsIndexes = `
+    CREATE INDEX IF NOT EXISTS idx_chat_requests_to_user_status_expires 
+      ON chat_requests(to_user_id, status, expires_at);
+    CREATE INDEX IF NOT EXISTS idx_chat_requests_from_user 
+      ON chat_requests(from_user_id);
+  `;
+
   // Add new columns if they don't exist (for existing tables)
   const addColumnsIfNotExist = `
     DO $$ 
@@ -153,6 +161,7 @@ export async function initializeDatabase(): Promise<void> {
     await pool.query(createNotificationsTable);
     await pool.query(createReportsTable);
     await pool.query(createChatRequestsTable);
+    await pool.query(createChatRequestsIndexes);
     console.log('Database tables initialized successfully');
   } catch (error) {
     console.error('Error initializing database tables:', error);

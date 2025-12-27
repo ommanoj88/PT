@@ -62,38 +62,6 @@ class FeedService {
     }
   }
 
-  /// Send a chat request (Pure-style direct request).
-  static Future<Map<String, dynamic>> sendChatRequest({
-    required String toUserId,
-    String? message,
-  }) async {
-    final token = await AuthService.getToken();
-
-    if (token == null) {
-      throw Exception('Not authenticated');
-    }
-
-    final response = await http.post(
-      Uri.parse(Config.requestsEndpoint),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode({
-        'to_user_id': toUserId,
-        if (message != null) 'message': message,
-      }),
-    );
-
-    final data = jsonDecode(response.body);
-
-    if (response.statusCode == 201 && data['success'] == true) {
-      return data['data'];
-    } else {
-      throw Exception(data['error'] ?? 'Failed to send request');
-    }
-  }
-
   /// Get a random user (Roll the Dice).
   static Future<Map<String, dynamic>?> rollDice() async {
     final token = await AuthService.getToken();

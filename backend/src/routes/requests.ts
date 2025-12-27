@@ -70,15 +70,21 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response): Pro
       return;
     }
 
-    // Create the chat request
-    const result = await client.query(
-      `INSERT INTO chat_requests (from_user_id, to_user_id, message, expires_at) 
-       VALUES ($1, $2, $3, CURRENT_TIMESTAMP + INTERVAL '1 hour')
-       ON CONFLICT (from_user_id, to_user_id) 
-       DO UPDATE SET message = $3, status = 'pending', created_at = CURRENT_TIMESTAMP, expires_at = CURRENT_TIMESTAMP + INTERVAL '1 hour', responded_at = NULL
-       RETURNING *`,
-      [userId, to_user_id, message || null],
-    );
+    // Create the chat request with upsert logic
+    // If a previous request exists (expired/rejected), update it with new values
+    const upsertQuery = `
+      INSERT INTO chat_requests (from_user_id, to_user_id, message, expires_at) 
+      VALUES ($1, $2, $3, CURRENT_TIMESTAMP + INTERVAL '1 hour')
+      ON CONFLICT (from_user_id, to_user_id) 
+      DO UPDATE SET 
+        message = EXCLUDED.message,
+        status = 'pending',
+        created_at = CURRENT_TIMESTAMP,
+        expires_at = CURRENT_TIMESTAMP + INTERVAL '1 hour',
+        responded_at = NULL
+      RETURNING *
+    `;
+    const result = await client.query(upsertQuery, [userId, to_user_id, message || null]);
 
     await client.query('COMMIT');
 

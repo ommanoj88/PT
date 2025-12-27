@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/feed_service.dart';
 import '../services/profile_service.dart';
+import '../services/request_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/widgets.dart';
 
@@ -156,7 +157,7 @@ class _PureFeedScreenState extends State<PureFeedScreen> with TickerProviderStat
     HapticFeedback.mediumImpact();
 
     try {
-      await FeedService.sendChatRequest(toUserId: user['id']);
+      await RequestService.sendRequest(toUserId: user['id']);
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
