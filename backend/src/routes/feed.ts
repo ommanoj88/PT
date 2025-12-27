@@ -7,6 +7,7 @@ const router = Router();
 /**
  * GET /api/feed
  * Get potential matches based on looking_for criteria
+ * Pure-style: Only shows users who are currently "live"
  * Excludes users already liked/passed
  */
 router.get('/', authenticateToken, async (req: AuthRequest, res: Response): Promise<void> => {
@@ -45,6 +46,7 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response): Prom
     // Get users that match criteria, excluding:
     // 1. Current user
     // 2. Users already interacted with (liked/passed)
+    // Pure-style: Only show users who are currently "live" (is_live = true AND live_until > NOW())
     const query = `
       SELECT 
         u.id,
@@ -61,7 +63,10 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response): Prom
         u.drinking,
         u.smoking,
         u.relationship_type,
-        EXTRACT(YEAR FROM AGE(CURRENT_DATE, u.birthdate)) as age
+        u.is_live,
+        u.live_until,
+        EXTRACT(YEAR FROM AGE(CURRENT_DATE, u.birthdate)) as age,
+        EXTRACT(EPOCH FROM (u.live_until - CURRENT_TIMESTAMP)) / 60 as minutes_remaining
       FROM users u
       WHERE u.id != $1
         AND u.name IS NOT NULL
@@ -69,7 +74,8 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response): Prom
         AND u.id NOT IN (
           SELECT to_user_id FROM interactions WHERE from_user_id = $1
         )
-      ORDER BY u.created_at DESC
+        AND (u.is_live = true AND u.live_until > CURRENT_TIMESTAMP)
+      ORDER BY u.live_until ASC
       LIMIT 20
     `;
 
@@ -93,6 +99,8 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response): Prom
           drinking: user.drinking,
           smoking: user.smoking,
           relationship_type: user.relationship_type,
+          is_live: user.is_live,
+          minutes_remaining: user.minutes_remaining ? Math.round(user.minutes_remaining) : null,
         })),
       },
     });

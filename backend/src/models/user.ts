@@ -13,6 +13,8 @@ export interface User {
   tags: string[] | null;
   credits: number;
   is_verified: boolean;
+  is_live: boolean;
+  live_until: Date | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -30,6 +32,8 @@ export interface UpdateProfileInput {
   birthdate?: string;
   photos?: string[];
   tags?: string[];
+  is_live?: boolean;
+  live_until?: string;
 }
 
 export async function findUserByPhoneOrEmail(phone?: string, email?: string): Promise<User | null> {
@@ -136,5 +140,41 @@ export async function updateUserCredits(id: string, credits: number): Promise<Us
   `;
 
   const result = await pool.query(query, [credits, id]);
+  return result.rows[0] || null;
+}
+
+/**
+ * Go Live - Pure-style feature where user profile becomes visible for a limited time
+ * @param id - User ID
+ * @param durationHours - How long to stay live (default: 1 hour)
+ */
+export async function goLive(id: string, durationHours: number = 1): Promise<User | null> {
+  const query = `
+    UPDATE users
+    SET is_live = true, 
+        live_until = CURRENT_TIMESTAMP + ($1 || ' hours')::INTERVAL,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = $2
+    RETURNING *
+  `;
+
+  const result = await pool.query(query, [durationHours.toString(), id]);
+  return result.rows[0] || null;
+}
+
+/**
+ * Go Offline - User goes offline/invisible
+ */
+export async function goOffline(id: string): Promise<User | null> {
+  const query = `
+    UPDATE users
+    SET is_live = false, 
+        live_until = NULL,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = $1
+    RETURNING *
+  `;
+
+  const result = await pool.query(query, [id]);
   return result.rows[0] || null;
 }

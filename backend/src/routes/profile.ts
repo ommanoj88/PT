@@ -1,6 +1,12 @@
 import { Router, Response } from 'express';
 import { AuthRequest, authenticateToken } from '../middleware/auth';
-import { findUserById, updateUserProfile, UpdateProfileInput } from '../models/user';
+import {
+  findUserById,
+  updateUserProfile,
+  UpdateProfileInput,
+  goLive,
+  goOffline,
+} from '../models/user';
 
 const router = Router();
 
@@ -45,6 +51,8 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response): Prom
         tags: user.tags,
         credits: user.credits,
         is_verified: user.is_verified,
+        is_live: user.is_live,
+        live_until: user.live_until,
         created_at: user.created_at,
       },
     });
@@ -157,5 +165,103 @@ router.put('/', authenticateToken, async (req: AuthRequest, res: Response): Prom
     });
   }
 });
+
+/**
+ * POST /api/profile/go-live
+ * Pure-style "Go Live" - Make profile visible for a limited time
+ */
+router.post(
+  '/go-live',
+  authenticateToken,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const userId = req.userId;
+      const { duration_hours = 1 } = req.body;
+
+      if (!userId) {
+        res.status(401).json({
+          success: false,
+          error: 'User not authenticated',
+        });
+        return;
+      }
+
+      // Validate duration (between 1 and 24 hours)
+      const durationHours = Math.min(Math.max(parseInt(duration_hours) || 1, 1), 24);
+
+      const updatedUser = await goLive(userId, durationHours);
+
+      if (!updatedUser) {
+        res.status(404).json({
+          success: false,
+          error: 'User not found',
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        message: `You are now live for ${durationHours} hour(s)!`,
+        data: {
+          is_live: updatedUser.is_live,
+          live_until: updatedUser.live_until,
+        },
+      });
+    } catch (error) {
+      console.error('Go live error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Internal server error',
+      });
+    }
+  },
+);
+
+/**
+ * POST /api/profile/go-offline
+ * Go offline - Make profile invisible
+ */
+router.post(
+  '/go-offline',
+  authenticateToken,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const userId = req.userId;
+
+      if (!userId) {
+        res.status(401).json({
+          success: false,
+          error: 'User not authenticated',
+        });
+        return;
+      }
+
+      const updatedUser = await goOffline(userId);
+
+      if (!updatedUser) {
+        res.status(404).json({
+          success: false,
+          error: 'User not found',
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'You are now offline',
+        data: {
+          is_live: updatedUser.is_live,
+          live_until: updatedUser.live_until,
+        },
+      });
+    } catch (error) {
+      console.error('Go offline error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Internal server error',
+      });
+    }
+  },
+);
 
 export default router;

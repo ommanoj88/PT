@@ -5,7 +5,7 @@ import 'auth_service.dart';
 
 /// Service class to handle feed/discovery API calls.
 class FeedService {
-  /// Get potential matches.
+  /// Get potential matches (Pure-style: only live users).
   static Future<List<Map<String, dynamic>>> getFeed() async {
     final token = await AuthService.getToken();
 
@@ -30,7 +30,7 @@ class FeedService {
     }
   }
 
-  /// Record an interaction (like or pass).
+  /// Record an interaction (like or pass) - still supports old matching.
   static Future<Map<String, dynamic>> interact({
     required String toUserId,
     required String action,
@@ -59,6 +59,38 @@ class FeedService {
       return data['data'];
     } else {
       throw Exception(data['error'] ?? 'Failed to record interaction');
+    }
+  }
+
+  /// Send a chat request (Pure-style direct request).
+  static Future<Map<String, dynamic>> sendChatRequest({
+    required String toUserId,
+    String? message,
+  }) async {
+    final token = await AuthService.getToken();
+
+    if (token == null) {
+      throw Exception('Not authenticated');
+    }
+
+    final response = await http.post(
+      Uri.parse(Config.requestsEndpoint),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'to_user_id': toUserId,
+        if (message != null) 'message': message,
+      }),
+    );
+
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 201 && data['success'] == true) {
+      return data['data'];
+    } else {
+      throw Exception(data['error'] ?? 'Failed to send request');
     }
   }
 

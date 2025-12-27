@@ -8,27 +8,27 @@ import 'theme/app_theme.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Set system UI overlay style for premium dark theme
+  // Set system UI overlay style for Pure dark theme
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
-      systemNavigationBarColor: AppTheme.primaryNavy,
+      systemNavigationBarColor: Color(0xFF0A0A0A),
       systemNavigationBarIconBrightness: Brightness.light,
     ),
   );
   
-  runApp(const VibeCheckApp());
+  runApp(const PureApp());
 }
 
-/// Main application widget for VibeCheck.
-class VibeCheckApp extends StatelessWidget {
-  const VibeCheckApp({super.key});
+/// Main application widget for Pure.
+class PureApp extends StatelessWidget {
+  const PureApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'VibeCheck',
+      title: 'Pure',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
       home: const AuthWrapper(),
@@ -68,44 +68,57 @@ class _AuthWrapperState extends State<AuthWrapper> {
       return Scaffold(
         body: Container(
           decoration: const BoxDecoration(
-            gradient: AppTheme.backgroundGradient,
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF0A0A0A), Color(0xFF1A1A1A)],
+            ),
           ),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(AppTheme.spacing24),
+                  padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    gradient: AppTheme.primaryGradient,
-                    borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+                    ),
+                    borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: AppTheme.accentFuchsia.withOpacity(0.4),
+                        color: const Color(0xFFEF4444).withOpacity(0.4),
                         blurRadius: 32,
                         spreadRadius: 4,
                       ),
                     ],
                   ),
                   child: const Icon(
-                    Icons.favorite,
+                    Icons.sensors,
                     size: 48,
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacing24),
+                const SizedBox(height: 24),
                 Text(
-                  'VibeCheck',
+                  'Pure',
                   style: Theme.of(context).textTheme.displaySmall?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacing16),
-                SizedBox(
+                const SizedBox(height: 8),
+                Text(
+                  'Privacy-first dating',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.white54,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const SizedBox(
                   width: 32,
                   height: 32,
                   child: CircularProgressIndicator(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Color(0xFFEF4444),
                     strokeWidth: 3,
                   ),
                 ),

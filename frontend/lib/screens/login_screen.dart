@@ -135,13 +135,13 @@ class _LoginScreenState extends State<LoginScreen>
                         _buildLogo(colorScheme),
                         const SizedBox(height: AppTheme.spacing16),
                         Text(
-                          'VibeCheck',
+                          'Pure',
                           textAlign: TextAlign.center,
-                          style: textTheme.displayMedium,
+                          style: textTheme.displayMedium?.copyWith(fontWeight: FontWeight.w800),
                         ),
                         const SizedBox(height: AppTheme.spacing8),
                         Text(
-                          'The Privacy-First High-Intent Dating App',
+                          'Privacy-First Dating',
                           textAlign: TextAlign.center,
                           style: textTheme.bodyMedium?.copyWith(
                             color: colorScheme.secondary,
@@ -226,18 +226,20 @@ class _LoginScreenState extends State<LoginScreen>
       height: 80,
       margin: const EdgeInsets.symmetric(horizontal: 120),
       decoration: BoxDecoration(
-        gradient: AppTheme.primaryGradient,
+        gradient: const LinearGradient(
+          colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+        ),
         borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.primary.withOpacity(0.4),
+            color: const Color(0xFFEF4444).withOpacity(0.4),
             blurRadius: 24,
             spreadRadius: 2,
           ),
         ],
       ),
       child: const Icon(
-        Icons.favorite,
+        Icons.sensors,
         size: 40,
         color: Colors.white,
       ),

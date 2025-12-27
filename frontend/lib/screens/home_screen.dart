@@ -5,12 +5,12 @@ import '../services/feed_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/widgets.dart';
 import 'login_screen.dart';
-import 'feed_screen.dart';
-import 'matches_screen.dart';
+import 'pure_feed_screen.dart';
+import 'requests_screen.dart';
 import 'wallet_screen.dart';
 import 'profile_name_gender_screen.dart';
 
-/// Main home screen with bottom navigation.
+/// Main home screen with bottom navigation - Pure style.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -20,11 +20,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-  bool _isDiceRolling = false;
 
   final List<Widget> _screens = [
-    const FeedScreen(),
-    const MatchesScreen(),
+    const PureFeedScreen(),
+    const RequestsScreen(),
     const WalletScreen(),
   ];
 
@@ -38,156 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _handleDiceRoll() async {
-    if (_isDiceRolling) return;
-    
-    HapticFeedback.mediumImpact();
-
-    setState(() {
-      _isDiceRolling = true;
-    });
-
-    try {
-      final user = await FeedService.rollDice();
-
-      if (mounted) {
-        if (user == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No users available right now')),
-          );
-        } else {
-          _showDiceResult(user);
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isDiceRolling = false;
-        });
-      }
-    }
-  }
-
-  void _showDiceResult(Map<String, dynamic> user) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.7,
-        decoration: BoxDecoration(
-          gradient: AppTheme.backgroundGradient,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(AppTheme.radiusXLarge),
-            topRight: Radius.circular(AppTheme.radiusXLarge),
-          ),
-          border: Border.all(color: colorScheme.outline),
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: AppTheme.spacing12),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: colorScheme.outline,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: AppTheme.spacing24),
-            Icon(
-              Icons.casino,
-              color: colorScheme.primary,
-              size: 48,
-            ),
-            const SizedBox(height: AppTheme.spacing12),
-            Text(
-              '🎲 Dice Result!',
-              style: textTheme.headlineLarge,
-            ),
-            const SizedBox(height: AppTheme.spacing24),
-            // User info
-            Container(
-              decoration: BoxDecoration(
-                gradient: AppTheme.primaryGradient,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: colorScheme.primary.withOpacity(0.3),
-                    blurRadius: 20,
-                    spreadRadius: 4,
-                  ),
-                ],
-              ),
-              child: CircleAvatar(
-                radius: 60,
-                backgroundColor: Colors.transparent,
-                child: Text(
-                  (user['name'] as String? ?? '?')[0].toUpperCase(),
-                  style: textTheme.displayMedium,
-                ),
-              ),
-            ),
-            const SizedBox(height: AppTheme.spacing16),
-            Text(
-              '${user['name'] ?? 'Unknown'}${user['age'] != null ? ', ${user['age']}' : ''}',
-              style: textTheme.displaySmall,
-            ),
-            const SizedBox(height: AppTheme.spacing8),
-            if (user['bio'] != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacing32),
-                child: Text(
-                  user['bio'],
-                  style: textTheme.bodyLarge?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.all(AppTheme.spacing24),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  PremiumIconButton(
-                    icon: Icons.close_rounded,
-                    onPressed: () => Navigator.pop(context),
-                    size: 60,
-                    iconSize: 32,
-                    gradientColors: [colorScheme.error, colorScheme.error.withOpacity(0.7)],
-                  ),
-                  PremiumIconButton(
-                    icon: Icons.favorite_rounded,
-                    onPressed: () {
-                      HapticFeedback.mediumImpact();
-                      Navigator.pop(context);
-                      // TODO: Like and maybe start chat
-                    },
-                    size: 70,
-                    iconSize: 36,
-                    isPrimary: true,
-                    gradientColors: [AppTheme.success, AppTheme.success.withOpacity(0.7)],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -195,48 +44,39 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('VibeCheck', style: textTheme.headlineSmall),
-        backgroundColor: colorScheme.secondaryContainer,
-        actions: [
-          // Dice button
-          IconButton(
-            onPressed: _isDiceRolling ? null : _handleDiceRoll,
-            icon: _isDiceRolling
-                ? SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      color: colorScheme.onSurface,
-                      strokeWidth: 2,
-                    ),
-                  )
-                : const Icon(Icons.casino),
-            tooltip: 'Roll the Dice',
-          ),
-        ],
+        title: Text('Pure', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
+        backgroundColor: const Color(0xFF0A0A0A),
+        elevation: 0,
       ),
       drawer: Drawer(
-        backgroundColor: colorScheme.secondaryContainer,
+        backgroundColor: const Color(0xFF1A1A1A),
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
               decoration: const BoxDecoration(
-                gradient: AppTheme.primaryGradient,
+                gradient: LinearGradient(
+                  colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Icon(
-                    Icons.favorite,
+                  const Icon(
+                    Icons.sensors,
                     size: 48,
-                    color: colorScheme.primary,
+                    color: Colors.white,
                   ),
-                  const SizedBox(height: AppTheme.spacing8),
+                  const SizedBox(height: 8),
                   Text(
-                    'VibeCheck',
-                    style: textTheme.headlineLarge,
+                    'Pure',
+                    style: textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.w800),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Privacy-first dating',
+                    style: textTheme.bodySmall?.copyWith(color: Colors.white70),
                   ),
                 ],
               ),
@@ -275,10 +115,10 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: colorScheme.surface,
+          color: const Color(0xFF0A0A0A),
           border: Border(
             top: BorderSide(
-              color: colorScheme.outline,
+              color: Colors.white.withOpacity(0.1),
               width: 1,
             ),
           ),
@@ -292,21 +132,21 @@ class _HomeScreenState extends State<HomeScreen> {
             });
           },
           backgroundColor: Colors.transparent,
-          selectedItemColor: colorScheme.primary,
-          unselectedItemColor: colorScheme.secondary,
+          selectedItemColor: const Color(0xFFEF4444),
+          unselectedItemColor: Colors.white54,
           elevation: 0,
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.explore_rounded),
-              label: 'Discover',
+              icon: Icon(Icons.grid_view_rounded),
+              label: 'Browse',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.chat_bubble_rounded),
-              label: 'Matches',
+              label: 'Requests',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.account_balance_wallet_rounded),
-              label: 'Wallet',
+              label: 'Credits',
             ),
           ],
         ),
