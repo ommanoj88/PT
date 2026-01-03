@@ -177,15 +177,15 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
       margin: const EdgeInsets.all(24),
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+          colors: [AppTheme.accentRed, AppTheme.accentRedDark],
         ),
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFEF4444).withOpacity(0.5),
+            color: AppTheme.accentRed.withOpacity(0.5),
             blurRadius: 40,
             spreadRadius: 10,
           ),
@@ -240,12 +240,12 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
         ),
         child: Row(
           children: [
-            Icon(icon, color: isPrimary ? const Color(0xFFEF4444) : Colors.white, size: 20),
+            Icon(icon, color: isPrimary ? const AppTheme.accentRed : Colors.white, size: 20),
             const SizedBox(width: 8),
             Text(
               label,
               style: TextStyle(
-                color: isPrimary ? const Color(0xFFEF4444) : Colors.white,
+                color: isPrimary ? const AppTheme.accentRed : Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -300,8 +300,8 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+                    gradient: LinearGradient(
+                      colors: [AppTheme.accentRed, AppTheme.accentRedDark],
                     ),
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -368,8 +368,8 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xFFEF4444).withOpacity(0.2),
-                    const Color(0xFFDC2626).withOpacity(0.2),
+                    AppTheme.accentRed.withOpacity(0.2),
+                    AppTheme.accentRedDark.withOpacity(0.2),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(30),
@@ -401,13 +401,13 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+          gradient: LinearGradient(
+            colors: [AppTheme.accentRed, AppTheme.accentRedDark],
           ),
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFEF4444).withOpacity(0.4),
+              color: AppTheme.accentRed.withOpacity(0.4),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -539,7 +539,7 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+            colors: [AppTheme.accentRed, AppTheme.accentRedDark],
           ),
         ),
         child: const Center(
@@ -702,7 +702,7 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFFEF4444),
+                    color: const AppTheme.accentRed,
                     letterSpacing: 1,
                   ),
                 ),
@@ -760,13 +760,13 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFFEF4444).withOpacity(0.3),
-            const Color(0xFFDC2626).withOpacity(0.3),
+            AppTheme.accentRed.withOpacity(0.3),
+            AppTheme.accentRedDark.withOpacity(0.3),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFFEF4444).withOpacity(0.5),
+          color: AppTheme.accentRed.withOpacity(0.5),
           width: 1,
         ),
       ),
@@ -890,7 +890,7 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
       style: const TextStyle(
         fontSize: 13,
         fontWeight: FontWeight.bold,
-        color: Color(0xFFEF4444),
+        color: AppTheme.accentRed,
         letterSpacing: 2,
       ),
     );
