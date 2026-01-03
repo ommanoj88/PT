@@ -120,8 +120,8 @@ class _ProfileLookingForScreenState extends State<ProfileLookingForScreen> {
           gradient: isSelected
               ? LinearGradient(
                   colors: [
-                    AppTheme.accentPurple.withOpacity(0.3),
-                    AppTheme.accentFuchsia.withOpacity(0.3),
+                    AppTheme.accentRed.withOpacity(0.3),
+                    AppTheme.accentRedDark.withOpacity(0.3),
                   ],
                 )
               : null,
@@ -134,7 +134,7 @@ class _ProfileLookingForScreenState extends State<ProfileLookingForScreen> {
         ),
         child: Row(
           children: [
-            Icon(icon, color: colorScheme.secondary, size: 28),
+            Icon(icon, color: Colors.white70, size: 28),
             const SizedBox(width: AppTheme.spacing16),
             Text(
               label,

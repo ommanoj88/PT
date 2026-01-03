@@ -225,7 +225,7 @@ class _GlassButtonState extends State<GlassButton>
                 borderRadius: BorderRadius.circular(widget.borderRadius),
                 boxShadow: [
                   BoxShadow(
-                    color: AppTheme.accentFuchsia.withOpacity(0.4),
+                    color: AppTheme.accentRed.withOpacity(0.4),
                     blurRadius: 16,
                     offset: const Offset(0, 6),
                   ),
