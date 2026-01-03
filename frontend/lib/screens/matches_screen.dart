@@ -99,15 +99,15 @@ class _MatchesScreenState extends State<MatchesScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppTheme.accentPurple.withOpacity(0.3),
-                    AppTheme.accentFuchsia.withOpacity(0.3),
+                    AppTheme.accentRed.withOpacity(0.3),
+                    AppTheme.accentRedDark.withOpacity(0.3),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(AppTheme.radiusRound),
               ),
               child: Icon(
                 Icons.chat_bubble_outline_rounded,
-                color: colorScheme.secondary,
+                color: Colors.white70,
                 size: 64,
               ),
             ),

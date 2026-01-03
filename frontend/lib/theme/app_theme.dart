@@ -1,22 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Premium app theme with deep navy/slate dark mode palette
+/// Pure app style theme - minimalist dark with red accents
 /// Following 8.0 logical pixel spacing system
 class AppTheme {
   AppTheme._();
 
   // === COLOR PALETTE ===
-  // Deep navy/slate dark mode colors inspired by Linear/Revolut
-  static const Color primaryNavy = Color(0xFF0F172A);
-  static const Color secondaryNavy = Color(0xFF1E293B);
-  static const Color surfaceNavy = Color(0xFF1E1B4B);
-  static const Color cardNavy = Color(0xFF334155);
+  // Pure app style - clean black/dark with red accents
+  static const Color primaryBlack = Color(0xFF0A0A0A);
+  static const Color secondaryBlack = Color(0xFF1A1A1A);
+  static const Color surfaceDark = Color(0xFF1F1F1F);
+  static const Color cardDark = Color(0xFF2A2A2A);
   
-  // Accent colors
-  static const Color accentPurple = Color(0xFF6366F1);
-  static const Color accentFuchsia = Color(0xFFD946EF);
-  static const Color accentViolet = Color(0xFFA78BFA);
+  // Legacy aliases for backwards compatibility
+  static const Color primaryNavy = primaryBlack;
+  static const Color secondaryNavy = secondaryBlack;
+  static const Color surfaceNavy = surfaceDark;
+  static const Color cardNavy = cardDark;
+  
+  // Accent colors - Pure uses red as primary
+  static const Color accentRed = Color(0xFFEF4444);
+  static const Color accentRedDark = Color(0xFFDC2626);
+  static const Color accentGray = Color(0xFF6B7280);
+  
+  // Legacy aliases for backwards compatibility
+  static const Color accentPurple = accentRed;
+  static const Color accentFuchsia = accentRed;
+  static const Color accentViolet = accentGray;
   
   // Semantic colors
   static const Color success = Color(0xFF22C55E);
@@ -33,19 +44,19 @@ class AppTheme {
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [accentPurple, accentFuchsia],
+    colors: [accentRed, accentRedDark],
   );
 
   static const LinearGradient backgroundGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [surfaceNavy, primaryNavy],
+    colors: [primaryBlack, secondaryBlack],
   );
 
   static const LinearGradient cardGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
+    colors: [secondaryBlack, primaryBlack],
   );
 
   // === SPACING (8px grid) ===
@@ -197,37 +208,37 @@ class AppTheme {
     useMaterial3: true,
     brightness: Brightness.dark,
     
-    // Color Scheme
+    // Color Scheme - Pure app style with red accents
     colorScheme: const ColorScheme.dark(
-      primary: accentFuchsia,
+      primary: accentRed,
       onPrimary: Colors.white,
-      primaryContainer: accentPurple,
+      primaryContainer: accentRedDark,
       onPrimaryContainer: Colors.white,
-      secondary: accentViolet,
+      secondary: accentGray,
       onSecondary: Colors.white,
-      secondaryContainer: surfaceNavy,
+      secondaryContainer: surfaceDark,
       onSecondaryContainer: Colors.white,
-      tertiary: accentPurple,
+      tertiary: accentRed,
       onTertiary: Colors.white,
       error: error,
       onError: Colors.white,
-      surface: primaryNavy,
+      surface: primaryBlack,
       onSurface: Colors.white,
-      surfaceContainerHighest: secondaryNavy,
+      surfaceContainerHighest: secondaryBlack,
       onSurfaceVariant: Colors.white70,
       outline: borderSubtle,
       outlineVariant: Color(0x33FFFFFF),
     ),
     
     // Scaffold
-    scaffoldBackgroundColor: primaryNavy,
+    scaffoldBackgroundColor: primaryBlack,
     
     // Text Theme
     textTheme: textTheme,
     
     // AppBar Theme
     appBarTheme: AppBarTheme(
-      backgroundColor: surfaceNavy,
+      backgroundColor: primaryBlack,
       foregroundColor: Colors.white,
       elevation: 0,
       centerTitle: false,
@@ -238,7 +249,7 @@ class AppTheme {
     
     // Card Theme - using custom containers instead
     cardTheme: CardThemeData(
-      color: secondaryNavy,
+      color: secondaryBlack,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(radiusMedium),
@@ -249,7 +260,7 @@ class AppTheme {
     // Elevated Button Theme
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: accentFuchsia,
+        backgroundColor: accentRed,
         foregroundColor: Colors.white,
         elevation: 0,
         padding: const EdgeInsets.symmetric(
@@ -266,7 +277,7 @@ class AppTheme {
     // Text Button Theme
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: accentViolet,
+        foregroundColor: accentGray,
         padding: const EdgeInsets.symmetric(
           horizontal: spacing16,
           vertical: spacing8,
@@ -283,7 +294,7 @@ class AppTheme {
           horizontal: spacing24,
           vertical: spacing16,
         ),
-        side: const BorderSide(color: accentViolet),
+        side: const BorderSide(color: Colors.white24),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusMedium),
         ),
@@ -309,7 +320,7 @@ class AppTheme {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(radiusMedium),
-        borderSide: const BorderSide(color: accentPurple, width: 2),
+        borderSide: const BorderSide(color: accentRed, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(radiusMedium),
@@ -319,30 +330,30 @@ class AppTheme {
         borderRadius: BorderRadius.circular(radiusMedium),
         borderSide: const BorderSide(color: error, width: 2),
       ),
-      labelStyle: textTheme.bodyMedium?.copyWith(color: accentViolet),
+      labelStyle: textTheme.bodyMedium?.copyWith(color: accentGray),
       hintStyle: textTheme.bodyMedium?.copyWith(color: Colors.white38),
-      prefixIconColor: accentViolet,
-      suffixIconColor: accentViolet,
-      floatingLabelStyle: textTheme.bodySmall?.copyWith(color: accentViolet),
+      prefixIconColor: accentGray,
+      suffixIconColor: accentGray,
+      floatingLabelStyle: textTheme.bodySmall?.copyWith(color: accentGray),
     ),
     
     // Bottom Navigation Bar Theme
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: primaryNavy,
-      selectedItemColor: accentFuchsia,
-      unselectedItemColor: accentViolet,
+      backgroundColor: primaryBlack,
+      selectedItemColor: accentRed,
+      unselectedItemColor: Colors.white54,
       type: BottomNavigationBarType.fixed,
       elevation: 0,
     ),
     
     // Drawer Theme
     drawerTheme: const DrawerThemeData(
-      backgroundColor: surfaceNavy,
+      backgroundColor: secondaryBlack,
     ),
     
     // Dialog Theme
     dialogTheme: DialogThemeData(
-      backgroundColor: secondaryNavy,
+      backgroundColor: secondaryBlack,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(radiusXLarge),
@@ -353,7 +364,7 @@ class AppTheme {
     
     // Snackbar Theme
     snackBarTheme: SnackBarThemeData(
-      backgroundColor: secondaryNavy,
+      backgroundColor: secondaryBlack,
       contentTextStyle: textTheme.bodyMedium,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(radiusMedium),
@@ -370,9 +381,9 @@ class AppTheme {
     // Chip Theme
     chipTheme: ChipThemeData(
       backgroundColor: surfaceLight,
-      selectedColor: accentFuchsia.withOpacity(0.3),
+      selectedColor: accentRed.withOpacity(0.3),
       labelStyle: textTheme.labelMedium,
-      side: BorderSide(color: accentViolet.withOpacity(0.5)),
+      side: BorderSide(color: accentRed.withOpacity(0.5)),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(radiusRound),
       ),
@@ -387,13 +398,13 @@ class AppTheme {
     
     // Icon Theme
     iconTheme: const IconThemeData(
-      color: accentViolet,
+      color: Colors.white70,
       size: 24,
     ),
     
     // List Tile Theme
     listTileTheme: ListTileThemeData(
-      iconColor: accentViolet,
+      iconColor: Colors.white70,
       textColor: Colors.white,
       contentPadding: const EdgeInsets.symmetric(
         horizontal: spacing16,
@@ -406,7 +417,7 @@ class AppTheme {
     
     // Progress Indicator Theme
     progressIndicatorTheme: const ProgressIndicatorThemeData(
-      color: accentFuchsia,
+      color: accentRed,
       linearTrackColor: surfaceLight,
       circularTrackColor: surfaceLight,
     ),
@@ -454,7 +465,7 @@ class AppTheme {
     borderRadius: BorderRadius.circular(radiusMedium),
     boxShadow: [
       BoxShadow(
-        color: accentFuchsia.withOpacity(0.4),
+        color: accentRed.withOpacity(0.4),
         blurRadius: 16,
         offset: const Offset(0, 6),
       ),
