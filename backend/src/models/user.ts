@@ -4,17 +4,7 @@ export interface User {
   id: string;
   phone: string | null;
   email: string | null;
-  name: string | null;
-  gender: string | null;
-  looking_for: string | null;
-  bio: string | null;
-  birthdate: Date | null;
-  photos: string[] | null;
-  tags: string[] | null;
-  credits: number;
   is_verified: boolean;
-  is_live: boolean;
-  live_until: Date | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -22,18 +12,6 @@ export interface User {
 export interface CreateUserInput {
   phone?: string;
   email?: string;
-}
-
-export interface UpdateProfileInput {
-  name?: string;
-  gender?: string;
-  looking_for?: string;
-  bio?: string;
-  birthdate?: string;
-  photos?: string[];
-  tags?: string[];
-  is_live?: boolean;
-  live_until?: string;
 }
 
 export async function findUserByPhoneOrEmail(phone?: string, email?: string): Promise<User | null> {
@@ -72,109 +50,6 @@ export async function createUser(input: CreateUserInput): Promise<User> {
 
 export async function findUserById(id: string): Promise<User | null> {
   const query = 'SELECT * FROM users WHERE id = $1';
-  const result = await pool.query(query, [id]);
-  return result.rows[0] || null;
-}
-
-export async function updateUserProfile(
-  id: string,
-  input: UpdateProfileInput,
-): Promise<User | null> {
-  const updates: string[] = [];
-  const values: (string | string[] | null)[] = [];
-  let paramIndex = 1;
-
-  if (input.name !== undefined) {
-    updates.push(`name = $${paramIndex++}`);
-    values.push(input.name);
-  }
-  if (input.gender !== undefined) {
-    updates.push(`gender = $${paramIndex++}`);
-    values.push(input.gender);
-  }
-  if (input.looking_for !== undefined) {
-    updates.push(`looking_for = $${paramIndex++}`);
-    values.push(input.looking_for);
-  }
-  if (input.bio !== undefined) {
-    updates.push(`bio = $${paramIndex++}`);
-    values.push(input.bio);
-  }
-  if (input.birthdate !== undefined) {
-    updates.push(`birthdate = $${paramIndex++}`);
-    values.push(input.birthdate);
-  }
-  if (input.photos !== undefined) {
-    updates.push(`photos = $${paramIndex++}`);
-    values.push(input.photos);
-  }
-  if (input.tags !== undefined) {
-    updates.push(`tags = $${paramIndex++}`);
-    values.push(input.tags);
-  }
-
-  if (updates.length === 0) {
-    return findUserById(id);
-  }
-
-  updates.push(`updated_at = CURRENT_TIMESTAMP`);
-  values.push(id);
-
-  const query = `
-    UPDATE users
-    SET ${updates.join(', ')}
-    WHERE id = $${paramIndex}
-    RETURNING *
-  `;
-
-  const result = await pool.query(query, values);
-  return result.rows[0] || null;
-}
-
-export async function updateUserCredits(id: string, credits: number): Promise<User | null> {
-  const query = `
-    UPDATE users
-    SET credits = credits + $1, updated_at = CURRENT_TIMESTAMP
-    WHERE id = $2
-    RETURNING *
-  `;
-
-  const result = await pool.query(query, [credits, id]);
-  return result.rows[0] || null;
-}
-
-/**
- * Go Live - Pure-style feature where user profile becomes visible for a limited time
- * @param id - User ID
- * @param durationHours - How long to stay live (default: 1 hour)
- */
-export async function goLive(id: string, durationHours: number = 1): Promise<User | null> {
-  const query = `
-    UPDATE users
-    SET is_live = true, 
-        live_until = CURRENT_TIMESTAMP + ($1 || ' hours')::INTERVAL,
-        updated_at = CURRENT_TIMESTAMP
-    WHERE id = $2
-    RETURNING *
-  `;
-
-  const result = await pool.query(query, [durationHours.toString(), id]);
-  return result.rows[0] || null;
-}
-
-/**
- * Go Offline - User goes offline/invisible
- */
-export async function goOffline(id: string): Promise<User | null> {
-  const query = `
-    UPDATE users
-    SET is_live = false, 
-        live_until = NULL,
-        updated_at = CURRENT_TIMESTAMP
-    WHERE id = $1
-    RETURNING *
-  `;
-
   const result = await pool.query(query, [id]);
   return result.rows[0] || null;
 }
