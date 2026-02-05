@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'screens/login_screen.dart';
-import 'screens/home_screen.dart';
 import 'services/auth_service.dart';
 import 'theme/app_theme.dart';
 
@@ -59,6 +58,13 @@ class _AuthWrapperState extends State<AuthWrapper> {
     setState(() {
       _isLoggedIn = isLoggedIn;
       _isLoading = false;
+    });
+  }
+
+  Future<void> _handleLogout() async {
+    await AuthService.logout();
+    setState(() {
+      _isLoggedIn = false;
     });
   }
 
@@ -129,6 +135,81 @@ class _AuthWrapperState extends State<AuthWrapper> {
       );
     }
 
-    return _isLoggedIn ? const HomeScreen() : const LoginScreen();
+    if (_isLoggedIn) {
+      return Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF0A0A0A), Color(0xFF1A1A1A)],
+            ),
+          ),
+          child: SafeArea(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFEF4444).withOpacity(0.4),
+                          blurRadius: 32,
+                          spreadRadius: 4,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.check_circle_outline,
+                      size: 48,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Welcome to Pure',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'You are authenticated',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white54,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  ElevatedButton(
+                    onPressed: _handleLogout,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFEF4444),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Logout',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return const LoginScreen();
   }
 }
