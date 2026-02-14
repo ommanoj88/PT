@@ -5,6 +5,8 @@ on:
     branches: ["main"]
     paths:
       - "valentine/**"
+      - ".github/workflows/deploy-valentine.yml"
+      - "index.html"
   workflow_dispatch:
 
 permissions:
@@ -20,7 +22,7 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}valentine/
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,10 +31,17 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Prepare deployment
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          mkdir -p _site/valentine
+          cp -r valentine/* _site/valentine/
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "valentine"
+          path: "_site"
 
       - name: Deploy to GitHub Pages
         id: deployment

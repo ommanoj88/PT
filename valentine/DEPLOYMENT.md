@@ -23,7 +23,9 @@ Your Valentine's website will be automatically deployed when changes are pushed 
 5. **Share the link with Renata!** 💕
 
 ### How it works:
-- A GitHub Actions workflow (`.github/workflows/deploy-valentine.yml`) automatically deploys the `valentine/` folder
+- A GitHub Actions workflow (`.github/workflows/deploy-valentine.yml`) automatically deploys the site
+- The root URL (`https://ommanoj88.github.io/PT/`) redirects to the valentine page
+- You can also access it directly at `https://ommanoj88.github.io/PT/valentine/`
 - Every time you update the valentine page and push to `main`, it redeploys automatically
 - **100% free** - GitHub Pages is free for public repositories!
 
