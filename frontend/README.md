@@ -1,16 +1,17 @@
-# vibecheck
+# Pure — Flutter Frontend
 
-A new Flutter project.
+Auth-only Flutter client for the Pure dating app. Provides login via phone/email and JWT-based session management.
 
-## Getting Started
+## Running
 
-This project is a starting point for a Flutter application.
+```bash
+flutter pub get
+flutter run
+```
 
-A few resources to get you started if this is your first Flutter project:
+## Key Files
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- `lib/main.dart` — App entry point and auth state wrapper
+- `lib/screens/login_screen.dart` — Phone/email login UI
+- `lib/services/auth_service.dart` — HTTP calls to backend auth API, token persistence
+- `lib/config.dart` — Backend URL configuration

@@ -1,5 +1,5 @@
-name: vibecheck
-description: VibeCheck - The Privacy-First High-Intent Dating App
+name: pure
+description: Pure - Auth Only
 
 publish_to: 'none'
 
@@ -11,11 +11,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^6.1.2
   http: ^1.2.2
   shared_preferences: ^2.3.4
   cupertino_icons: ^1.0.8
-  image_picker: ^1.0.7
 
 dev_dependencies:
   flutter_test:

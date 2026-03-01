@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/widgets.dart';
-import 'home_screen.dart';
+import '../main.dart';
 
 /// Login screen for user authentication.
 /// Accepts phone number and email for mock authentication.
@@ -89,9 +89,9 @@ class _LoginScreenState extends State<LoginScreen>
       );
 
       if (mounted) {
-        // Navigate to home screen on successful login
+        // Navigate to authenticated view on successful login
         Navigator.of(context).pushReplacement(
-          FadeSlidePageRoute(page: const HomeScreen()),
+          FadeSlidePageRoute(page: const AuthWrapper()),
         );
       }
     } catch (e) {
