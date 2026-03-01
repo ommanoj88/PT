@@ -177,15 +177,15 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
       margin: const EdgeInsets.all(24),
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF7C3AED), Color(0xFFDB2777)],
+          colors: [AppTheme.accentRed, AppTheme.accentRedDark],
         ),
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFDB2777).withOpacity(0.5),
+            color: AppTheme.accentRed.withOpacity(0.5),
             blurRadius: 40,
             spreadRadius: 10,
           ),
@@ -197,7 +197,7 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
           const Text('🔥', style: TextStyle(fontSize: 64)),
           const SizedBox(height: 16),
           const Text(
-            'IT\'S A VIBE!',
+            'IT\'S A MATCH!',
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.w900,
@@ -240,12 +240,12 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
         ),
         child: Row(
           children: [
-            Icon(icon, color: isPrimary ? const Color(0xFFDB2777) : Colors.white, size: 20),
+            Icon(icon, color: isPrimary ? const AppTheme.accentRed : Colors.white, size: 20),
             const SizedBox(width: 8),
             Text(
               label,
               style: TextStyle(
-                color: isPrimary ? const Color(0xFFDB2777) : Colors.white,
+                color: isPrimary ? const AppTheme.accentRed : Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -262,7 +262,7 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF0F0F23), Color(0xFF1A1A2E), Color(0xFF16213E)],
+          colors: [Color(0xFF0A0A0A), Color(0xFF1A1A1A), Color(0xFF0F0F0F)],
         ),
       ),
       child: SafeArea(child: _buildBody()),
@@ -300,19 +300,19 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF7C3AED), Color(0xFFDB2777)],
+                    gradient: LinearGradient(
+                      colors: [AppTheme.accentRed, AppTheme.accentRedDark],
                     ),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Icon(Icons.local_fire_department, color: Colors.white, size: 40),
+                  child: const Icon(Icons.sensors, color: Colors.white, size: 40),
                 ),
               );
             },
           ),
           const SizedBox(height: 24),
           Text(
-            'Finding your vibes...',
+            'Finding people near you...',
             style: TextStyle(
               color: Colors.white.withOpacity(0.7),
               fontSize: 16,
@@ -368,22 +368,22 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xFF7C3AED).withOpacity(0.2),
-                    const Color(0xFFDB2777).withOpacity(0.2),
+                    AppTheme.accentRed.withOpacity(0.2),
+                    AppTheme.accentRedDark.withOpacity(0.2),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(30),
               ),
-              child: const Text('🌙', style: TextStyle(fontSize: 64)),
+              child: const Text('👀', style: TextStyle(fontSize: 64)),
             ),
             const SizedBox(height: 32),
             const Text(
-              'All caught up!',
+              'No one is live right now',
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             const SizedBox(height: 12),
             Text(
-              'New people are joining every minute.\nCome back soon for fresh vibes.',
+              'New people are going live every minute.\nCome back soon.',
               style: TextStyle(color: Colors.white.withOpacity(0.5), height: 1.5),
               textAlign: TextAlign.center,
             ),
@@ -401,13 +401,13 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF7C3AED), Color(0xFFDB2777)],
+          gradient: LinearGradient(
+            colors: [AppTheme.accentRed, AppTheme.accentRedDark],
           ),
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFDB2777).withOpacity(0.4),
+              color: AppTheme.accentRed.withOpacity(0.4),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -518,7 +518,7 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
           ),
         ),
         child: const Center(
-          child: Text('🔥', style: TextStyle(fontSize: 100)),
+          child: Icon(Icons.person, color: Colors.white30, size: 100),
         ),
       );
     }
@@ -539,11 +539,11 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF7C3AED), Color(0xFFDB2777)],
+            colors: [AppTheme.accentRed, AppTheme.accentRedDark],
           ),
         ),
         child: const Center(
-          child: Text('🔥', style: TextStyle(fontSize: 100)),
+          child: Icon(Icons.person, color: Colors.white30, size: 100),
         ),
       );
     }
@@ -696,13 +696,13 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
           if (kinks.isNotEmpty) ...[
             Row(
               children: [
-                const Text('🔥 ', style: TextStyle(fontSize: 14)),
+                const Text('✦ ', style: TextStyle(fontSize: 14)),
                 Text(
-                  'KINKS',
+                  'INTERESTS',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFFDB2777),
+                    color: const AppTheme.accentRed,
                     letterSpacing: 1,
                   ),
                 ),
@@ -760,13 +760,13 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFFDB2777).withOpacity(0.3),
-            const Color(0xFF7C3AED).withOpacity(0.3),
+            AppTheme.accentRed.withOpacity(0.3),
+            AppTheme.accentRedDark.withOpacity(0.3),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFFDB2777).withOpacity(0.5),
+          color: AppTheme.accentRed.withOpacity(0.5),
           width: 1,
         ),
       ),
@@ -857,7 +857,7 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
               
               // Kinks Section
               if (kinks.isNotEmpty) ...[
-                _buildSectionTitle('🔥 KINKS & TURN-ONS'),
+                _buildSectionTitle('✦ INTERESTS'),
                 const SizedBox(height: 12),
                 Wrap(
                   spacing: 10,
@@ -890,7 +890,7 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
       style: const TextStyle(
         fontSize: 13,
         fontWeight: FontWeight.bold,
-        color: Color(0xFFDB2777),
+        color: AppTheme.accentRed,
         letterSpacing: 2,
       ),
     );

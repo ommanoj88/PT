@@ -181,15 +181,15 @@ class _ProfileTagsScreenState extends State<ProfileTagsScreen> {
           gradient: isSelected
               ? LinearGradient(
                   colors: [
-                    AppTheme.accentPurple.withOpacity(0.5),
-                    AppTheme.accentFuchsia.withOpacity(0.5),
+                    AppTheme.accentRed.withOpacity(0.5),
+                    AppTheme.accentRedDark.withOpacity(0.5),
                   ],
                 )
               : null,
           color: isSelected ? null : colorScheme.surfaceContainerHighest.withOpacity(0.3),
           borderRadius: BorderRadius.circular(AppTheme.radiusRound),
           border: Border.all(
-            color: isSelected ? colorScheme.primary : colorScheme.secondary.withOpacity(0.5),
+            color: isSelected ? colorScheme.primary : Colors.white24,
           ),
         ),
         child: Row(
@@ -202,7 +202,7 @@ class _ProfileTagsScreenState extends State<ProfileTagsScreen> {
             Text(
               tag,
               style: textTheme.labelLarge?.copyWith(
-                color: isSelected ? Colors.white : colorScheme.secondary,
+                color: isSelected ? Colors.white : Colors.white70,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
               ),
             ),

@@ -86,7 +86,7 @@ class PremiumButton extends StatefulWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
           border: Border.all(
-            color: borderColor ?? AppTheme.accentViolet,
+            color: borderColor ?? Colors.white24,
             width: 1.5,
           ),
         ),
@@ -99,7 +99,7 @@ class PremiumButton extends StatefulWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (icon != null) ...[
-              Icon(icon, color: AppTheme.accentViolet, size: 20),
+              Icon(icon, color: Colors.white70, size: 20),
               const SizedBox(width: AppTheme.spacing8),
             ],
             Text(
@@ -190,7 +190,7 @@ class _PremiumButtonState extends State<PremiumButton>
                       borderRadius: BorderRadius.circular(widget.borderRadius),
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.accentFuchsia.withOpacity(
+                          color: AppTheme.accentRed.withOpacity(
                             widget.onPressed != null && !widget.isLoading
                                 ? 0.4
                                 : 0.2,
@@ -201,7 +201,7 @@ class _PremiumButtonState extends State<PremiumButton>
                       ],
                     )
                   : BoxDecoration(
-                      color: widget.backgroundColor ?? AppTheme.accentFuchsia,
+                      color: widget.backgroundColor ?? AppTheme.accentRed,
                       borderRadius: BorderRadius.circular(widget.borderRadius),
                     ),
               child: Padding(
@@ -287,8 +287,8 @@ class _PremiumIconButtonState extends State<PremiumIconButton>
   Widget build(BuildContext context) {
     final colors = widget.gradientColors ??
         (widget.isPrimary
-            ? [AppTheme.accentPurple, AppTheme.accentFuchsia]
-            : [AppTheme.secondaryNavy, AppTheme.primaryNavy]);
+            ? [AppTheme.accentRed, AppTheme.accentRedDark]
+            : [AppTheme.secondaryBlack, AppTheme.primaryBlack]);
 
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
